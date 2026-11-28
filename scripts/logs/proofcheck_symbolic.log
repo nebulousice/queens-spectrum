@@ -1,0 +1,4 @@
+A1 reduced system, n odd: det = -3/2
+A1 reduced system, n even: det = 5*n**2
+G_q recurrence residual: 0
+pivot k + gamma_k = k*(-k + q + 1)/(-k + q)

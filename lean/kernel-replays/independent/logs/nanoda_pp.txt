@@ -1,0 +1,85 @@
+def QueensSpectrum.queensGraph (n : Nat) : SimpleGraph (Prod (Fin n) (Fin n)) :=
+  SimpleGraph.mk (fun (x y : Prod (Fin n) (Fin n)) => And (Ne x y) (QueensSpectrum.Attack n x y)) _
+    _
+
+def QueensSpectrum.Attack (n : Nat) (x y : Prod (Fin n) (Fin n)) : Sort 0 :=
+  Or (Eq (Prod.fst x) (Prod.fst y))
+    (Or (Eq (Prod.snd x) (Prod.snd y))
+      (Or
+        (Eq (HSub.hSub (Nat.cast (Fin.val (Prod.fst x))) (Nat.cast (Fin.val (Prod.snd x))))
+          (HSub.hSub (Nat.cast (Fin.val (Prod.fst y))) (Nat.cast (Fin.val (Prod.snd y)))))
+        (Eq (HAdd.hAdd (Nat.cast (Fin.val (Prod.fst x))) (Nat.cast (Fin.val (Prod.snd x))))
+          (HAdd.hAdd (Nat.cast (Fin.val (Prod.fst y))) (Nat.cast (Fin.val (Prod.snd y)))))))
+
+theorem QueensSpectrum.queens_eigenspace.{u_2} (K : Type u_2) :
+  forall [inst._@.Pipeline.QueensSpectrum.Eigenspace.3026710398._hygCtx._hyg.16 : Field K]
+    [inst._@.Pipeline.QueensSpectrum.Eigenspace.3026710398._hygCtx._hyg.19 : LinearOrder K]
+    [inst._@.Pipeline.QueensSpectrum.Eigenspace.3026710398._hygCtx._hyg.22 : IsStrictOrderedRing K]
+    (n : Nat),
+  LE.le (OfNat.ofNat 4) n → (forall (x : Prod (Fin n) (Fin n) → K),
+  Iff
+    (Membership.mem
+      (Module.End.eigenspace
+        (DFunLike.coe Matrix.toLin' (SimpleGraph.adjMatrix K (QueensSpectrum.queensGraph n)))
+        (HSub.hSub (Nat.cast n) (OfNat.ofNat 4))) x)
+    (Exists
+      (fun (r : Fin n → K) =>
+      And (forall (i : Fin n), Eq (r (Fin.rev i)) (r i))
+        (Exists
+          (fun (γ : K) =>
+          And (Even n → Eq γ (OfNat.ofNat 0))
+            (forall (i j : Fin n),
+            Eq (x (Prod.mk i j))
+              (HAdd.hAdd (HSub.hSub (r i) (r j))
+                (HMul.hMul γ
+                  (HSub.hSub (ite (Eq i j) (OfNat.ofNat 1) (OfNat.ofNat 0))
+                    (ite (Eq (HAdd.hAdd (Fin.val i) (Fin.val j)) (HSub.hSub n (OfNat.ofNat 1)))
+                      (OfNat.ofNat 1) (OfNat.ofNat 0))))))))))) :=
+  _
+
+theorem QueensSpectrum.queens_eigenspace_real (n : Nat) (hn : LE.le (OfNat.ofNat 4) n)
+  (x : Prod (Fin n) (Fin n) → Real) :
+  Iff
+    (Membership.mem
+      (Module.End.eigenspace
+        (DFunLike.coe Matrix.toLin' (SimpleGraph.adjMatrix Real (QueensSpectrum.queensGraph n)))
+        (HSub.hSub (Nat.cast n) (OfNat.ofNat 4))) x)
+    (Exists
+      (fun (r : Fin n → Real) =>
+      And (forall (i : Fin n), Eq (r (Fin.rev i)) (r i))
+        (Exists
+          (fun (γ : Real) =>
+          And (Even n → Eq γ (OfNat.ofNat 0))
+            (forall (i j : Fin n),
+            Eq (x (Prod.mk i j))
+              (HAdd.hAdd (HSub.hSub (r i) (r j))
+                (HMul.hMul γ
+                  (HSub.hSub (ite (Eq i j) (OfNat.ofNat 1) (OfNat.ofNat 0))
+                    (ite (Eq (HAdd.hAdd (Fin.val i) (Fin.val j)) (HSub.hSub n (OfNat.ofNat 1)))
+                      (OfNat.ofNat 1) (OfNat.ofNat 0)))))))))) :=
+  _
+
+theorem QueensSpectrum.queens_mult.{u_1} (K : Type u_1) :
+  forall [inst._@.Pipeline.QueensSpectrum.Main.1618563271._hygCtx._hyg.3 : Field K]
+    [inst._@.Pipeline.QueensSpectrum.Main.1618563271._hygCtx._hyg.6 : LinearOrder K]
+    [inst._@.Pipeline.QueensSpectrum.Main.1618563271._hygCtx._hyg.9 : IsStrictOrderedRing K]
+    (n : Nat),
+  LE.le (OfNat.ofNat 4) n → Eq
+    (Module.finrank K
+      (Subtype
+        (fun (x : Prod (Fin n) (Fin n) → K) =>
+        Membership.mem
+          (Module.End.eigenspace
+            (DFunLike.coe Matrix.toLin' (SimpleGraph.adjMatrix K (QueensSpectrum.queensGraph n)))
+            (HSub.hSub (Nat.cast n) (OfNat.ofNat 4))) x)))
+    (ite (Even n) (HDiv.hDiv (HSub.hSub n (OfNat.ofNat 2)) (OfNat.ofNat 2))
+      (HDiv.hDiv (HAdd.hAdd n (OfNat.ofNat 1)) (OfNat.ofNat 2))) :=
+  _
+
+axiom propext {a b : Sort 0} : Iff a b → Eq a b
+
+axiom Classical.choice.{u} {α : Sort u} : Nonempty α → α
+
+axiom Quot.sound.{u} {α : Sort u} {r : α → α → Sort 0} {a b : α} :
+  r a b → Eq (Quot.mk r a) (Quot.mk r b)
+

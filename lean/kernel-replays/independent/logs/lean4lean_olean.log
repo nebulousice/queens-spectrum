@@ -1,0 +1,8 @@
+lean4lean found a problem in Pipeline.QueensSpectrum.Defs:
+failed to read file '<user>\Documents\research-pipeline\lean\.lake\build\lib\lean\Pipeline\QueensSpectrum\Defs.olean', incompatible header
+replaying Pipeline.QueensSpectrum.Defs
+
+real	1m7.816s
+user	0m0.015s
+sys	0m0.030s
+exit=1

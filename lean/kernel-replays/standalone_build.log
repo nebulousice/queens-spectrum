@@ -1,0 +1,34 @@
+$ git -C lean4checker rev-parse HEAD
+90151c4d12922510ff90802118953adb6edcfe1d
+v4.29.0-rc8
+$ git status --short (local change: lean-toolchain overridden)
+ M lean-toolchain
+warning: in the working copy of 'lean-toolchain', LF will be replaced by CRLF the next time Git touches it
+diff --git a/lean-toolchain b/lean-toolchain
+index ccec351..0e037f5 100644
+--- a/lean-toolchain
++++ b/lean-toolchain
+@@ -1 +1 @@
+-leanprover/lean4:v4.29.0-rc8
++leanprover/lean4:v4.37.0-rc1
+$ lake build lean4checker
+✖ [7/13] Building Lean4Checker.Replay (763ms)
+trace: .> LEAN_PATH=<user>\AppData\Local\Temp\claude\3585629b1257959c\81d0dd50-cccb-4297-a7a6-f3708ab70b70\scratchpad\lean4checker\.lake\build\lib\lean <user>\.elan\toolchains\leanprover--lean4---v4.37.0-rc1\bin\lean.exe <user>\AppData\Local\Temp\claude\3585629b1257959c\81d0dd50-cccb-4297-a7a6-f3708ab70b70\scratchpad\lean4checker\Lean4Checker\Replay.lean -o <user>\AppData\Local\Temp\claude\3585629b1257959c\81d0dd50-cccb-4297-a7a6-f3708ab70b70\scratchpad\lean4checker\.lake\build\lib\lean\Lean4Checker\Replay.olean -i <user>\AppData\Local\Temp\claude\3585629b1257959c\81d0dd50-cccb-4297-a7a6-f3708ab70b70\scratchpad\lean4checker\.lake\build\lib\lean\Lean4Checker\Replay.ilean -c <user>\AppData\Local\Temp\claude\3585629b1257959c\81d0dd50-cccb-4297-a7a6-f3708ab70b70\scratchpad\lean4checker\.lake\build\ir\Lean4Checker\Replay.c --setup <user>\AppData\Local\Temp\claude\3585629b1257959c\81d0dd50-cccb-4297-a7a6-f3708ab70b70\scratchpad\lean4checker\.lake\build\ir\Lean4Checker\Replay.setup.json --json
+error: Lean4Checker/Replay.lean:65:34: Application type mismatch: The argument
+  d
+has type
+  Declaration
+but is expected to have type
+  USize
+in the application
+  __do_lift✝.env.addDeclCore 0 d
+error: Lean4Checker/Replay.lean:66:4: Type mismatch
+  Except.ok env
+has type
+  Except ?m.10 ?m.9
+but is expected to have type
+  Declaration → Except Kernel.Exception Kernel.Environment
+Some required targets logged failures:
+- Lean4Checker.Replay
+error: build failed
+exit=1

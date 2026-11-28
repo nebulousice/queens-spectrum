@@ -1,0 +1,8 @@
+n= 4 dim ker(A-(n-4)I)=1 expected=1 rank(family)=1 rank(family+ker)=1 family_in_eigenspace=True gterm_in_eigenspace=False (should be False) nonpalindromic_e0_in=False (should be False) OK
+n= 5 dim ker(A-(n-4)I)=3 expected=3 rank(family)=3 rank(family+ker)=3 family_in_eigenspace=True gterm_in_eigenspace=True (should be True) nonpalindromic_e0_in=False (should be False) OK
+n= 6 dim ker(A-(n-4)I)=2 expected=2 rank(family)=2 rank(family+ker)=2 family_in_eigenspace=True gterm_in_eigenspace=False (should be False) nonpalindromic_e0_in=False (should be False) OK
+n= 7 dim ker(A-(n-4)I)=4 expected=4 rank(family)=4 rank(family+ker)=4 family_in_eigenspace=True gterm_in_eigenspace=True (should be True) nonpalindromic_e0_in=False (should be False) OK
+n= 8 dim ker(A-(n-4)I)=3 expected=3 rank(family)=3 rank(family+ker)=3 family_in_eigenspace=True gterm_in_eigenspace=False (should be False) nonpalindromic_e0_in=False (should be False) OK
+n= 9 dim ker(A-(n-4)I)=5 expected=5 rank(family)=5 rank(family+ker)=5 family_in_eigenspace=True gterm_in_eigenspace=True (should be True) nonpalindromic_e0_in=False (should be False) OK
+n=10 dim ker(A-(n-4)I)=4 expected=4 rank(family)=4 rank(family+ker)=4 family_in_eigenspace=True gterm_in_eigenspace=False (should be False) nonpalindromic_e0_in=False (should be False) OK
+COR13 CHECK: ALL PASS

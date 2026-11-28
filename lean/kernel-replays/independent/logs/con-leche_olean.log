@@ -1,0 +1,6 @@
+con-leche: declined: <user>/Documents/research-pipeline/lean/.lake/build/lib/lean\Pipeline\QueensSpectrum\Main.olean: .olean format version 4 (this reader reads version 2) (--verified)
+
+real	0m0.097s
+user	0m0.046s
+sys	0m0.015s
+exit=2

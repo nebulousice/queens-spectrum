@@ -1,0 +1,6 @@
+con-ron: rejected: type mismatch in theorem [at theorem QueensSpectrum.queens_eigenspace_real, fold position 24688] (--verified) t=5.134s
+
+real	0m5.285s
+user	0m0.061s
+sys	0m0.030s
+exit=1

@@ -1,0 +1,9 @@
+con-leche: stats: phases: parse 0.5s (index 0.0s), check 7.3s
+con-leche: stats: check pool: 7.367s wall, 8 workers, 24689 records, busy 58.435s (99.1%); tail 0.090s after the last start, 8 busy then, 0.282s worker-time in it (39.2%)
+con-leche: stats: slowest checks: 0.163s theorem QueensSpectrum.sectorA1_pure (#14050); 0.161s theorem Submodule.basis_of_pid_aux (#18072); 0.154s theorem LinearMap.map_mul_of_map_mul_tmul (#21758); 0.146s theorem Lean.Grind.Ring.OfSemiring.mul_helper (#11893); 0.146s theorem QueensSpectrum.N_vecB2._proof_1_12 (#24652)
+con-leche: invalid: type mismatch in theorem QueensSpectrum.queens_eigenspace_real [at theorem QueensSpectrum.queens_eigenspace_real, fold position 24688] (--verified) t=7.9s
+
+real	0m8.323s
+user	0m0.076s
+sys	0m0.031s
+exit=1

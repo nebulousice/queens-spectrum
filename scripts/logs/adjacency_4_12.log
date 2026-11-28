@@ -1,0 +1,10 @@
+n=4: nullity(A - (n-4)I) on 16x16 = 1 (conj 1); explicit eigenvectors in kernel: True, their rank 1; PASS
+n=5: nullity(A - (n-4)I) on 25x25 = 3 (conj 3); explicit eigenvectors in kernel: True, their rank 3; PASS
+n=6: nullity(A - (n-4)I) on 36x36 = 2 (conj 2); explicit eigenvectors in kernel: True, their rank 2; PASS
+n=7: nullity(A - (n-4)I) on 49x49 = 4 (conj 4); explicit eigenvectors in kernel: True, their rank 4; PASS
+n=8: nullity(A - (n-4)I) on 64x64 = 3 (conj 3); explicit eigenvectors in kernel: True, their rank 3; PASS
+n=9: nullity(A - (n-4)I) on 81x81 = 5 (conj 5); explicit eigenvectors in kernel: True, their rank 5; PASS
+n=10: nullity(A - (n-4)I) on 100x100 = 4 (conj 4); explicit eigenvectors in kernel: True, their rank 4; PASS
+n=11: nullity(A - (n-4)I) on 121x121 = 6 (conj 6); explicit eigenvectors in kernel: True, their rank 6; PASS
+n=12: nullity(A - (n-4)I) on 144x144 = 5 (conj 5); explicit eigenvectors in kernel: True, their rank 5; PASS
+ADJACENCY: ALL PASS

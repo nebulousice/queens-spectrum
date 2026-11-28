@@ -1,0 +1,20 @@
+start 2026-11-27T18:47:42Z
+$ lake env leanchecker -v Pipeline.QueensSpectrum
+replaying Pipeline.QueensSpectrum.Symmetry
+replaying Pipeline.QueensSpectrum.Seq
+replaying Pipeline.QueensSpectrum.SectorE
+replaying Pipeline.QueensSpectrum.SectorB2
+replaying Pipeline.QueensSpectrum.SectorA1
+replaying Pipeline.QueensSpectrum.Reduction
+replaying Pipeline.QueensSpectrum.Main
+replaying Pipeline.QueensSpectrum.Kernel
+replaying Pipeline.QueensSpectrum.Eigenspace
+replaying Pipeline.QueensSpectrum.Defs
+replaying Pipeline.QueensSpectrum.Count
+replaying Pipeline.QueensSpectrum.AlgMult
+
+real	5m27.235s
+user	0m0.015s
+sys	0m0.031s
+exit=0
+end 2026-11-27T18:53:10Z

@@ -1,0 +1,15 @@
+{
+  "export_file_path": "<user>/<scratchpad>/exp/queens.ndjson",
+  "use_stdin": false,
+  "num_threads": 8,
+  "stack_size_bytes": 1073741824,
+  "permitted_axioms": ["propext", "Classical.choice", "Quot.sound"],
+  "unpermitted_axiom_hard_error": true,
+  "nat_extension": true,
+  "string_extension": true,
+  "pp_declars": ["QueensSpectrum.queensGraph", "QueensSpectrum.Attack", "QueensSpectrum.queens_eigenspace", "QueensSpectrum.queens_eigenspace_real", "QueensSpectrum.queens_mult"],
+  "pp_output_path": "<user>/<scratchpad>/exp/nanoda_pp.txt",
+  "pp_to_stdout": false,
+  "pp_options": {"explicit": false, "proofs": false, "indent": 2, "width": 100},
+  "print_success_message": true
+}

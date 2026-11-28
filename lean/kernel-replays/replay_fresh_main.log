@@ -1,0 +1,9 @@
+start 2026-11-27T18:53:10Z
+$ lake env leanchecker -v --fresh Pipeline.QueensSpectrum.Main
+replaying Pipeline.QueensSpectrum.Main with --fresh
+
+real	8m25.152s
+user	0m0.016s
+sys	0m0.030s
+exit=0
+end 2026-11-27T19:01:35Z

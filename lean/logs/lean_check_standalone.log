@@ -1,0 +1,36 @@
+== lake build
+warning: Pipeline\QueensSpectrum\Defs.lean: imports `Mathlib.Algebra.BigOperators.Fin` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\Defs.lean: imports `Mathlib.Order.Interval.Finset.Defs` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\Defs.lean: imports `Mathlib.Data.Int.Interval` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\Defs.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\Defs.lean: imports `Mathlib.Combinatorics.SimpleGraph.AdjMatrix` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\Defs.lean: imports `Mathlib.LinearAlgebra.Matrix.ToLin` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\Defs.lean: imports `Mathlib.Algebra.BigOperators.Intervals` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\Defs.lean: imports `Mathlib.Algebra.BigOperators.Fin` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\Defs.lean: imports `Mathlib.Order.Interval.Finset.Defs` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\Defs.lean: imports `Mathlib.Data.Int.Interval` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\Defs.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\AlgMult.lean: imports `Mathlib.LinearAlgebra.Eigenspace.Zero` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\AlgMult.lean: imports `Mathlib.LinearAlgebra.Charpoly.ToMatrix` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\AlgMult.lean: imports `Mathlib.LinearAlgebra.Matrix.DotProduct` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\AlgMult.lean: imports `Mathlib.LinearAlgebra.Matrix.ToLin` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\AlgMult.lean: imports `Mathlib.LinearAlgebra.Eigenspace.Zero` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\AlgMult.lean: imports `Mathlib.LinearAlgebra.Charpoly.ToMatrix` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\AlgMult.lean: imports `Mathlib.LinearAlgebra.Matrix.DotProduct` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: Pipeline\QueensSpectrum\AlgMult.lean: imports `Mathlib.LinearAlgebra.Matrix.ToLin` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+Build completed successfully (6689 jobs).
+== sorry / admit scan
+== axioms
+'QueensSpectrum.queensGraph_sanity' depends on axioms: [propext]
+'QueensSpectrum.lemma1' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QueensSpectrum.lemma2' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QueensSpectrum.ker_char' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QueensSpectrum.finrank_E' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QueensSpectrum.queens_mult' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QueensSpectrum.queens_mult_real' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QueensSpectrum.queens_mult_rat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QueensSpectrum.queens_alg_mult' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QueensSpectrum.queens_hasEigenvalue' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QueensSpectrum.queens_alg_mult_real' depends on axioms: [propext, Classical.choice, Quot.sound]
+PASS lean_check QueensSpectrum (Lean (version 4.37.0-rc1, x86_64-w64-windows-gnu, commit 0b77e12952ad39077d80d8bd6b66d601f225c321, Release))
+exit=0 seconds=97

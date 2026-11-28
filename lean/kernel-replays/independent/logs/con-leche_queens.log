@@ -1,0 +1,9 @@
+con-leche: stats: phases: parse 0.4s (index 0.0s), check 7.3s
+con-leche: stats: check pool: 7.343s wall, 8 workers, 24689 records, busy 58.205s (99.0%); tail 0.096s after the last start, 8 busy then, 0.288s worker-time in it (37.3%)
+con-leche: stats: slowest checks: 0.213s theorem _private.Init.Grind.Ring.Kronecker.0.Lean.Grind.CommRing.PPoly.natAbs_coeff_le._proof_1_3 (#12139); 0.204s theorem Lean.Grind.Ring.OfSemiring.mul_helper (#11893); 0.172s theorem QueensSpectrum.palEquiv._proof_3 (#17702); 0.156s theorem QueensSpectrum.sectorA1_pure (#14050); 0.149s theorem QueensSpectrum.finrank_E._proof_1_2 (#17756)
+con-leche: accepted 24689 declarations (--verified)
+
+real	0m7.998s
+user	0m0.046s
+sys	0m0.061s
+exit=0

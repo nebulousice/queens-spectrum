@@ -1,0 +1,38 @@
+n=4: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -2/3 on rows [1]; PASS
+n=5: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=6: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -3/5 on rows [1]; PASS
+n=7: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=8: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -4/7 on rows [1]; PASS
+n=9: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=10: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -5/9 on rows [1]; PASS
+n=11: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=12: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -6/11 on rows [1]; PASS
+n=13: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=14: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -7/13 on rows [1]; PASS
+n=15: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=16: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -8/15 on rows [1]; PASS
+n=17: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=18: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -9/17 on rows [1]; PASS
+n=19: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=20: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -10/19 on rows [1]; PASS
+n=21: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=22: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -11/21 on rows [1]; PASS
+n=23: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=24: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -12/23 on rows [1]; PASS
+n=25: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=26: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -13/25 on rows [1]; PASS
+n=27: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=28: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -14/27 on rows [1]; PASS
+n=29: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=30: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -15/29 on rows [1]; PASS
+n=31: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=32: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -16/31 on rows [1]; PASS
+n=33: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=34: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -17/33 on rows [1]; PASS
+n=35: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=36: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -18/35 on rows [1]; PASS
+n=37: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=38: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -19/37 on rows [1]; PASS
+n=39: kernel dim of (B2 - nI) from board = 1 (expected 1); block form -(G_p (+) (I+2G_(p-1))/2) ok; PASS
+n=40: kernel dim of (B2 - nI) from board = 0 (expected 0); shooting closed form ok, residual -20/39 on rows [1]; PASS
+B2 LEMMA STEPS: ALL PASS

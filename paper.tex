@@ -1,0 +1,1490 @@
+\documentclass[11pt]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+
+% ------------------------------------------------------------------
+% Theorem environments
+% ------------------------------------------------------------------
+\theoremstyle{plain}
+\newtheorem*{mainthm}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}[lemma]{Corollary}
+\newtheorem*{lemmaG}{Lemma G}
+\theoremstyle{definition}
+\newtheorem*{conjecture}{Conjecture}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\numberwithin{equation}{section}
+
+% ------------------------------------------------------------------
+% Macros
+% ------------------------------------------------------------------
+\newcommand{\QG}{\mathcal{Q}}          % the n-Queens graph
+\newcommand{\Adj}{\mathbf{A}}          % its adjacency matrix
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\iv}[1]{[#1]}              % Iverson bracket
+\newcommand{\abs}[1]{\lvert #1\rvert}
+\newcommand{\rev}[1]{#1^{\leftarrow}}  % reversal of a row vector
+\newcommand{\refl}[1]{#1^{-}}          % reflection of a diagonal vector
+\newcommand{\dc}{d^{\circ}}
+\newcommand{\Eq}{\mathrm{Eq}}
+\newcommand{\VA}{V_{A_1}}
+\newcommand{\VBa}{V_{B_1}}
+\newcommand{\VBb}{V_{B_2}}
+\newcommand{\VE}{V_{E}}
+\newcommand{\VEp}{V_{E'}}
+\DeclareMathOperator{\rank}{rank}
+\newcommand{\leanus}{\textunderscore\allowbreak}
+\newcommand{\lean}[1]{{\ttfamily\let\_\leanus #1}}  % a Lean name; may break after "_"
+\emergencystretch=2em
+
+\title[The multiplicity of $n-4$ in the $n$-Queens graph]{The exact multiplicity of the eigenvalue $n-4$ of the $n$-Queens graph}
+\author{Sukhraj Sachdeva}
+\date{Version 3, 2026-11-27. All versions: DOI \href{https://doi.org/10.5281/zenodo.24596852}{10.5281/zenodo.24596852}}
+
+\begin{document}
+
+\begin{abstract}
+For every integer \(n\ge 4\) we show that the eigenvalue \(n-4\) of the adjacency
+matrix of the \(n\)-Queens graph has multiplicity exactly \((n-2)/2\) when \(n\) is even
+and \((n+1)/2\) when \(n\) is odd. Cardoso, Costa and Duarte proved that these numbers
+are lower bounds, with explicit eigenvectors, and conjectured equality. We prove the
+matching upper bound. The proof is by hand and uses only elementary linear algebra:
+three symmetries of the board split the problem into four small linear systems, and
+each system is solved explicitly. No step uses a computer. The whole theorem, for every
+\(n\ge4\), has also been checked by the Lean~4 proof assistant with the Mathlib library,
+as has the explicit description of the eigenspace that the proof yields.
+Two other parts of the conjecture of Cardoso, Costa and Duarte remain open.
+
+Human-directed research produced with the help of AI tools (Claude) and checked by AI
+referees (Claude Opus, Claude Fable and Claude Sonnet; ChatGPT and Gemini as outside
+cross-checks). The main theorem is formalized in Lean~4 with Mathlib. Additional
+verification may still be required.
+\end{abstract}
+
+\maketitle
+
+% ==================================================================
+\section{Introduction}\label{sec:intro}
+% ==================================================================
+
+\subsection{The problem}
+The \emph{\(n\)-Queens graph} \(\QG(n)\) has the \(n^2\) squares of an \(n\times n\)
+chessboard as its vertices. Two distinct squares are adjacent when a chess queen on one
+of them attacks the other, that is, when they share a row, a column or a diagonal (in
+either direction). Its \emph{adjacency matrix} \(\Adj\) is the \(n^2\times n^2\) matrix
+with entry \(1\) for adjacent squares and \(0\) otherwise. It is real and symmetric, so
+all its eigenvalues are real. The \emph{multiplicity} of an eigenvalue \(\lambda\) is its
+multiplicity as a root of the characteristic polynomial; for a symmetric matrix this
+equals \(\dim\ker(\Adj-\lambda I)\).
+
+Cardoso, Costa and Duarte studied which eigenvalues of \(\Adj\) are integers
+\cite{CCD20,CCD23,CCD25}. For \(n\ge4\) let \(L(n)\) be the following set of integers:
+\(L(n)=\{-4,\,n-4\}\) if \(n\) is even, and
+\[
+L(n)=\Bigl\{-4,-3,\dots,\tfrac{n-11}{2}\Bigr\}\cup\Bigl\{\tfrac{n-5}{2},\dots,n-5,\,n-4\Bigr\}
+\qquad\text{if \(n\) is odd.}
+\]
+They proved that every element of \(L(n)\) other than \(-4\) is an eigenvalue of \(\Adj\)
+\cite[Sections~3--4]{CCD23}, that \(-4\) is the least eigenvalue and has multiplicity
+exactly \((n-3)^2\) \cite[Theorems~3.6 and~3.8]{CCD20}, \cite{CCD22}, and that \(n-4\) has
+multiplicity at least \((n-2)/2\) (\(n\) even) or \((n+1)/2\) (\(n\) odd), with explicit
+eigenvectors. The last result first appeared in \cite[Theorem~3.10]{CCD20} and was
+restated in \cite[Theorem~4.1 and Corollary~4.2]{CCD23}. They stated the rest as a
+conjecture. Their Conjecture~1 \cite{CCD23} consists of three sentences, which the source
+does not number. We restate it in our words and label its three sentences (a), (b) and
+(c), in order; these labels are ours. So part~(b) below is the second sentence of
+Conjecture~1 of \cite{CCD23}.
+
+\begin{conjecture}[Cardoso, Costa and Duarte {\cite[Conjecture~1]{CCD23}}]
+Let \(n\ge4\).
+\begin{enumerate}
+\item[(a)] The integer eigenvalues of \(\Adj\) are exactly the elements of \(L(n)\).
+\item[(b)] The eigenvalue \(n-4\) has multiplicity \((n-2)/2\) if \(n\) is even and
+\((n+1)/2\) if \(n\) is odd.
+\item[(c)] The elements of \(L(n)\) other than \(-4\) and \(n-4\) are simple eigenvalues.
+\end{enumerate}
+\end{conjecture}
+
+The conjecture first appeared in \cite[Conjecture~3]{CCD20}. It is restated as open in
+\cite[Conjecture~4.1]{CCD25} and in Costa's thesis \cite{Cos24}. The authors report that
+their computations confirm it for \(n\le100\) \cite{CCD20,CCD23}; the method is not
+stated. In \cite{CCD25} they decompose \(\QG(n)\) into edge-disjoint pieces, among them
+\emph{integral} graphs (graphs whose eigenvalues are all integers), and bound
+individual eigenvalues with Weyl's inequalities. Our
+literature search also covered the spectra of simplicial rook graphs
+\cite{MW15,BCHV16}, another family of integral graphs; neither of these papers studies
+the \(n\)-Queens graph. Our proof
+uses neither them nor the decomposition of \cite{CCD25}.
+
+\subsection{Result}
+This paper proves part~(b), the second sentence of Conjecture~1 of \cite{CCD23}.
+
+\begin{mainthm}
+Let \(n\ge4\). Then \(n-4\) is an eigenvalue of the adjacency matrix of \(\QG(n)\), and
+its multiplicity is exactly \((n-2)/2\) if \(n\) is even and \((n+1)/2\) if \(n\) is odd.
+\end{mainthm}
+
+Since the lower bounds are known \cite[Theorem~3.10]{CCD20}, \cite[Corollary~4.2]{CCD23},
+the content of the Theorem is the upper bound. Our proof does not use the lower bound: it computes the dimension of
+the eigenspace exactly. As a by-product it describes the eigenspace
+(Corollary~\ref{cor:eigenspace}); that description coincides with the span of the
+eigenvectors of Cardoso, Costa and Duarte (Remark~\ref{rem:credit}).
+
+Parts (a) and (c) of the conjecture remain open. This paper does not settle the
+conjecture.
+
+\subsection{Credit}
+The conjecture, the lower bounds for the multiplicity of \(n-4\), and the eigenvectors
+are due to Cardoso, Costa and Duarte \cite{CCD20,CCD23}. The description of the
+eigenspace in Corollary~\ref{cor:eigenspace} is theirs in full: their eigenvectors span
+it. The exact value, equivalently the upper bound (the Theorem), is conjectured but not proved in their papers (\cite[Conjecture~3]{CCD20}; \cite[Conjecture~1]{CCD23}; \cite[Conjecture~4.1]{CCD25}); whether a proof of it,
+or the method used here, appears elsewhere has not been checked beyond our literature search of 2026-11-27.
+That search found no earlier proof or
+claim of this upper bound in the sources we checked. Some sources could not be checked that day; they
+are listed in the file \nolinkurl{LITERATURE_CHECK.md} of the accompanying repository:
+\begin{center}
+\footnotesize\url{https://github.com/nebulousice/cardoso-costa-duarte-queens-conjecture}
+\end{center}
+This is a dated search result, not a priority claim.
+
+\subsection{Method}
+The proof has four steps.
+\begin{enumerate}
+\item Every square lies on exactly four \emph{lines} (its row, column, diagonal and
+antidiagonal), and two distinct squares are adjacent exactly when they share a line.
+So \(\Adj=NN^{T}-4I\), where \(N\) is the square--line incidence matrix. It follows that
+the multiplicity of \(n-4\) in \(\Adj\) equals \(\dim\ker(M-nI)\), where \(M=N^{T}N\) is
+the \((6n-2)\times(6n-2)\) matrix of intersection sizes of lines
+(Section~\ref{sec:reduction}).
+\item Three explicit symmetries of the board (transpose, left--right flip, half-turn)
+split the space of functions on lines into five pieces that \(M\) preserves. Two of the
+pieces behave identically (Section~\ref{sec:sectors}).
+\item On each piece, \(M\) has an explicit formula (Section~\ref{sec:action}), and the
+kernel of \(M-nI\) is found by hand: dimension \(\lceil n/2\rceil-1\) on one piece,
+\(1\) or \(0\) on another depending on the parity of \(n\), and \(0\) on the other three
+(Sections~\ref{sec:B1E}--\ref{sec:B2}). The hardest piece is handled by a discrete
+maximum principle (Lemma~\ref{lem:means}).
+\item Adding up gives the Theorem (Section~\ref{sec:main}).
+\end{enumerate}
+No representation theory is needed: the decomposition comes from three explicit
+involutions.
+
+\subsection{What is proved by hand, what is checked by computer, and what is
+formalized}
+\begin{itemize}
+\item \emph{By hand:} everything. The Theorem, every lemma and Corollary~\ref{cor:eigenspace}
+have complete written proofs below. No step uses a computation.
+\item \emph{By computer, as corroboration only:} the Theorem and its individual steps,
+for finitely many \(n\), in exact integer and rational arithmetic
+(Section~\ref{sec:computer}). These checks are not certificates in the sense of
+Section~\ref{sec:computer}, and the proof does not use them.
+\item \emph{Formalized in a proof assistant:} the whole Theorem, for every \(n\ge4\),
+in Lean~4 with Mathlib (Section~\ref{sec:formal}). The Lean proof follows the
+same plan as the written proof, with a few local differences listed there.
+Corollary~\ref{cor:eigenspace} is also formalized, as \lean{queens\_eigenspace} (over
+any field with a compatible total order, such as \(\mathbb{Q}\) or \(\R\)) and \lean{queens\_eigenspace\_real}, in the file
+\nolinkurl{Eigenspace.lean}. The appendix is not formalized.
+\end{itemize}
+The written proof does not depend on the computer checks or on the Lean files. The Lean
+files give a separate, machine-checked proof of the same Theorem, starting from the
+definition of the graph.
+
+\subsection{Status of this work}
+The proof was written on 2026-11-27. It has been through three review rounds by AI
+referees (Claude models), each working independently and checking the proof line by line
+and with their own exact computations. No referee has found a mathematical error. In the
+first round, one referee accepted with no issues; the other raised three minor issues
+(an unsupported status label for the finite-range computations, incomplete credit for
+the eigenspace, and a mislabelled comment and a stale sentence), all fixed without
+changing any mathematical step. In the second round, a third referee accepted with no
+issues; the other two raised minor issues about wording and citation (a stale status
+sentence, and that the lower bound should be credited first to \cite{CCD20}). In the third round, on the
+fixed text, two referees accepted with no issues and the third raised two minor wording
+points in the credit remarks (what the papers of Cardoso, Costa and Duarte state about the
+upper bound, and a linear relation among the vectors of the printed set \(Y^n\) of
+\cite{CCD20}); both are fixed here, with no mathematical change. The proof therefore passed
+the review rule we applied: at least two of three referees accept with no issues, and no
+referee has an unresolved major issue. The referees read an earlier presentation of the
+same proof, with the same lemmas and the same mathematical steps; the present text
+reorders the parts of one lemma and rewrites the introductory and closing sections.
+
+After the review, the Theorem was formalized in Lean~4 with Mathlib, for every
+\(n\ge4\) (Section~\ref{sec:formal}). The Lean check passed in two separate runs. A
+further AI referee (Claude Opus) rebuilt the Lean files from a fresh copy and checked
+that the Lean statement says what the source conjecture says. Corollary~\ref{cor:eigenspace}
+was then formalized as well, and the same model checked its Lean statement. Finally the
+compiled Lean proofs were checked again by several proof-checking programs (kernels),
+two of them written independently of Lean (Section~\ref{sec:formal}).
+
+Two other AI systems, ChatGPT and Gemini, were each given the first version of this
+paper in a fresh session, with a referee prompt asking for a line-by-line check. They
+found no mathematical error and reported minor formatting issues only.
+
+\textbf{Expert verification required.} Verified so far with: Lean~4 and Mathlib (the
+whole Theorem and Corollary~\ref{cor:eigenspace}, for every \(n\ge4\); no unproved step;
+only the three standard axioms); replays of the compiled Lean proofs by Lean's own
+checker and by the independent kernels \texttt{nanoda\_bin} and \texttt{lean4lean}, all
+passing; three rounds of AI review of the written proof by Claude Opus, Claude Fable and
+Claude Sonnet, as described above (passed in round~3: Claude Opus and Claude Sonnet
+accepted with no issues, Claude Fable raised two minor wording points, since fixed; no
+referee found a mathematical error or raised a major issue); AI checks of the Lean
+statements, of the Theorem against the source conjecture and of
+Corollary~\ref{cor:eigenspace} against its written statement (Claude Opus; both
+confirmed); exact computation for
+\(4\le n\le40\) (Section~\ref{sec:computer}), which is corroboration and not a
+certificate; and the outside cross-checks by ChatGPT and Gemini described above.
+
+% ==================================================================
+\section{Notation and conventions}\label{sec:notation}
+% ==================================================================
+
+Throughout, \(n\ge4\) is an integer, and for a statement \(P\) we write \(\iv{P}=1\) if
+\(P\) holds and \(\iv{P}=0\) otherwise.
+
+\emph{Board.} The squares are the pairs \((i,j)\) with \(0\le i,j\le n-1\). Two distinct
+squares \((i,j)\) and \((i',j')\) are adjacent in \(\QG(n)\) when \(i=i'\), or \(j=j'\),
+or \(i-j=i'-j'\), or \(i+j=i'+j'\). (The sources index squares from \(1\); shifting the
+indices is a graph isomorphism and changes nothing.)
+
+\emph{Lines.} There are four families of lines: the rows \(R_i\) and columns \(C_j\)
+(\(0\le i,j\le n-1\)), the diagonals \(D_k\) and the antidiagonals \(A_s\)
+(\(\abs{k},\abs{s}\le n-1\)):
+\begin{align*}
+R_i&=\{(i,j)\mid 0\le j\le n-1\}, & C_j&=\{(i,j)\mid 0\le i\le n-1\},\\
+D_k&=\{(i,j)\mid i-j=k\}, & A_s&=\{(i,j)\mid i+j-(n-1)=s\}.
+\end{align*}
+There are \(n+n+(2n-1)+(2n-1)=6n-2\) lines, all nonempty. The square \((i,j)\) lies on
+exactly four lines, one of each family: \(R_i\), \(C_j\), \(D_{i-j}\) and
+\(A_{i+j-(n-1)}\). (The letter \(A\) with an integer subscript always denotes an
+antidiagonal; the adjacency matrix is the bold \(\Adj\).)
+
+\emph{Line space.} Let \(V=\R^{6n-2}\) be the space of real functions on the set of
+lines. We write a vector as \(v=(r,c,d,a)\), where \(r=(r_i)_{0\le i\le n-1}\) lists its
+values on the rows, \(c=(c_j)_{0\le j\le n-1}\) on the columns,
+\(d=(d_k)_{\abs{k}\le n-1}\) on the diagonals and \(a=(a_s)_{\abs{s}\le n-1}\) on the
+antidiagonals.
+
+\emph{Incidence and Gram matrices.} Let \(N\) be the \(n^2\times(6n-2)\) matrix with
+entries \(N_{x,L}=\iv{x\in L}\) for a square \(x\) and a line \(L\), and let
+\(M=N^{T}N\). Then \(M_{L,L'}=\abs{L\cap L'}\). For \(v=(r,c,d,a)\),
+\begin{equation}\label{eq:Nv}
+(Nv)(i,j)=r_i+c_j+d_{i-j}+a_{i+j-(n-1)},\qquad (Mv)_L=\sum_{x\in L}(Nv)(x).
+\end{equation}
+
+\emph{Reversals.} For \(r\in\R^n\) put \(\rev{r}_i=r_{n-1-i}\). For
+\(d=(d_k)_{\abs{k}\le n-1}\) put \(\refl{d}_k=d_{-k}\). We call \(r\)
+\emph{palindromic} if \(\rev{r}=r\) and \emph{antipalindromic} if \(\rev{r}=-r\). We call
+\(d\) \emph{even} if \(\refl{d}=d\) and \emph{odd} if \(\refl{d}=-d\); an odd \(d\) has
+\(d_0=0\).
+
+\emph{Sums.} For \(r\in\R^n\) put \(\rho_k=\sum_{i=k}^{n-1}r_i\) for \(0\le k\le n-1\),
+\(\rho_n=0\) and \(R=\rho_0=\sum_i r_i\). Then \(r_i=\rho_i-\rho_{i+1}\). For \(m\ge0\) let
+\(S(m)=\{-m,-m+2,\dots,m-2,m\}\); it has \(m+1\) elements and is symmetric under
+\(s\mapsto -s\). For real numbers \(d_0,\dots,d_{n-1}\) put
+\begin{equation}\label{eq:T}
+T_m=\sum_{s\in S(m)}d_{\abs{s}}\quad(0\le m\le n-1),\qquad T_{-1}=0,\qquad
+D=\sum_{k=0}^{n-1}d_k.
+\end{equation}
+Thus \(T_m=d_0+2(d_2+d_4+\dots+d_m)\) for even \(m\), and \(T_m=2(d_1+d_3+\dots+d_m)\) for
+odd \(m\). (Without a subscript, \(R\) and \(D\) denote the sums just defined; with a
+subscript, \(R_i\) and \(D_k\) denote lines.)
+
+% ==================================================================
+\section{Reduction to the Gram matrix of the lines}\label{sec:reduction}
+% ==================================================================
+
+This section shows that the multiplicity of \(n-4\) in \(\Adj\) equals
+\(\dim\ker(M-nI)\). Both lemmas are standard facts about edge clique partitions and Gram
+matrices (compare \cite{CCD22}); we prove them to keep the paper self-contained.
+
+\begin{lemma}\label{lem:clique}
+Two distinct squares lie on at most one common line, and they are adjacent in \(\QG(n)\)
+if and only if they lie on a common line. Hence \(NN^{T}=\Adj+4I\).
+\end{lemma}
+
+\begin{proof}
+The entry \((NN^{T})_{x,x'}\) is the number of lines that contain both \(x\) and \(x'\).
+For \(x=x'\) it is \(4\), since every square lies on exactly four lines. Let
+\(x=(i,j)\ne x'=(i',j')\). Each square lies on exactly one line of each family, so the
+number of common lines is the number of true statements among
+\[
+\text{(a) } i=i',\qquad \text{(b) } j=j',\qquad \text{(c) } i-j=i'-j',\qquad
+\text{(d) } i+j=i'+j'.
+\]
+By definition, \(x\) and \(x'\) are adjacent exactly when at least one of them holds. Any
+two of them force \(x=x'\): (a) and (b) directly; (a) and (c) give \(j=j'\); (a) and (d)
+give \(j=j'\); (b) and (c) give \(i=i'\); (b) and (d) give \(i=i'\); (c) and (d) give
+\(2i=2i'\) by addition, hence \(i=i'\) and then \(j=j'\). So for \(x\ne x'\) at most one
+statement holds, and \((NN^{T})_{x,x'}=\iv{x\text{ adjacent to }x'}=\Adj_{x,x'}\).
+\end{proof}
+
+\begin{lemma}\label{lem:gram}
+For every real \(\mu\ne0\), the map \(v\mapsto Nv\) is a linear bijection from
+\(\ker(M-\mu I)\) onto \(\ker(NN^{T}-\mu I)\). Consequently, the multiplicity of \(n-4\)
+as an eigenvalue of \(\Adj\) equals \(\dim\ker(M-nI)\), and \(N\) maps \(\ker(M-nI)\)
+bijectively onto \(\ker(\Adj-(n-4)I)\).
+\end{lemma}
+
+\begin{proof}
+If \(Mv=\mu v\), then \(NN^{T}(Nv)=N(Mv)=\mu Nv\). So \(N\) maps \(\ker(M-\mu I)\) into
+\(\ker(NN^{T}-\mu I)\). It is injective there: if \(Mv=\mu v\) and \(Nv=0\), then
+\(\mu v=N^{T}Nv=0\), so \(v=0\) because \(\mu\ne0\). Hence
+\(\dim\ker(M-\mu I)\le\dim\ker(NN^{T}-\mu I)\). The same argument with \(N\) and \(N^{T}\)
+exchanged gives the reverse inequality. So the dimensions are equal, and the injective
+map \(N\) is a bijection. By Lemma~\ref{lem:clique},
+\(\ker(\Adj-(n-4)I)=\ker(NN^{T}-nI)\), and \(\mu=n\ne0\).
+\end{proof}
+
+% ==================================================================
+\section{Three symmetries and the five sectors}\label{sec:sectors}
+% ==================================================================
+
+This section splits \(V\) into five subspaces that \(M\) preserves. We use three
+explicit \emph{involutions} (linear maps whose square is the identity). The names
+\(A_1\), \(B_1\), \(B_2\), \(E\), \(E'\) of the subspaces are only labels.
+
+Define linear maps \(t,h,z\colon V\to V\) by
+\begin{equation}\label{eq:ops}
+\begin{gathered}
+t(r,c,d,a)=(c,r,\refl{d},a),\qquad h(r,c,d,a)=(r,\rev{c},a,d),\\
+z(r,c,d,a)=(\rev{r},\rev{c},\refl{d},\refl{a}).
+\end{gathered}
+\end{equation}
+
+\begin{lemma}\label{lem:sym}
+\begin{enumerate}
+\item[(a)] \(t^2=h^2=z^2=I\), \(tz=zt\), \(hz=zh\), \(th=zht\), and \((th)^2=z\).
+\item[(b)] Each of \(t\), \(h\), \(z\) commutes with \(M\).
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(a) The reversals \(r\mapsto\rev{r}\) and \(d\mapsto\refl{d}\) are involutions, and so is
+a swap of two entries of \((r,c,d,a)\); hence \(t^2=h^2=z^2=I\). For \(v=(r,c,d,a)\),
+substituting into \eqref{eq:ops} gives
+\begin{align*}
+tzv&=t(\rev{r},\rev{c},\refl{d},\refl{a})=(\rev{c},\rev{r},d,\refl{a}),\\
+ztv&=z(c,r,\refl{d},a)=(\rev{c},\rev{r},d,\refl{a}),\\
+hzv&=h(\rev{r},\rev{c},\refl{d},\refl{a})=(\rev{r},c,\refl{a},\refl{d}),\\
+zhv&=z(r,\rev{c},a,d)=(\rev{r},c,\refl{a},\refl{d}),\\
+thv&=t(r,\rev{c},a,d)=(\rev{c},r,\refl{a},d),\\
+zhtv&=z(c,\rev{r},a,\refl{d})=(\rev{c},r,\refl{a},d).
+\end{align*}
+So \(tz=zt\), \(hz=zh\) and \(th=zht\). Finally \((th)^2=(zht)(th)=zh(tt)h=zhh=z\).
+
+(b) Consider the three bijections of the board \(\tau(i,j)=(j,i)\) (transpose),
+\(\eta(i,j)=(i,n-1-j)\) (left--right flip) and \(\zeta(i,j)=(n-1-i,n-1-j)\) (half-turn).
+Each is an involution, and each maps lines onto lines as in the following table.
+\begin{center}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+line \(L\) & \(R_i\) & \(C_j\) & \(D_k\) & \(A_s\)\\
+\midrule
+\(\tau(L)\) & \(C_i\) & \(R_j\) & \(D_{-k}\) & \(A_s\)\\
+\(\eta(L)\) & \(R_i\) & \(C_{n-1-j}\) & \(A_k\) & \(D_s\)\\
+\(\zeta(L)\) & \(R_{n-1-i}\) & \(C_{n-1-j}\) & \(D_{-k}\) & \(A_{-s}\)\\
+\bottomrule
+\end{tabular}
+\end{center}
+Each entry \(\sigma(L)\subseteq L'\) is checked by substituting into the defining
+equation of the line. For instance, \((i,j)\in D_k\) means \(i-j=k\), which is
+\(i+(n-1-j)-(n-1)=k\); so \(\eta(i,j)\in A_k\). The inclusions are equalities: the table
+also gives \(\sigma(L')\subseteq L\) (for example \(\eta(A_k)\subseteq D_k\)), hence
+\(L'=\sigma(\sigma(L'))\subseteq\sigma(L)\).
+
+Let \(\sigma\) be one of \(\tau,\eta,\zeta\). It permutes the lines, and
+\(\sigma^{-1}=\sigma\). Define \(\hat\sigma\colon V\to V\) by
+\((\hat\sigma v)_L=v_{\sigma(L)}\). Since \(\sigma\) is a bijection of the board,
+\(\abs{\sigma(L)\cap\sigma(L')}=\abs{L\cap L'}\) for all lines \(L,L'\). Substituting
+\(L'=\sigma(L'')\) and then applying \(\sigma\) to both sets,
+\begin{align*}
+(M\hat\sigma v)_L&=\sum_{L'}\abs{L\cap L'}\,v_{\sigma(L')}
+=\sum_{L''}\abs{L\cap\sigma(L'')}\,v_{L''}\\
+&=\sum_{L''}\abs{\sigma(L)\cap L''}\,v_{L''}=(Mv)_{\sigma(L)}=(\hat\sigma Mv)_L.
+\end{align*}
+So \(\hat\sigma\) commutes with \(M\). Reading the table,
+\[
+\hat\tau v=(c,r,\refl{d},a),\qquad
+\hat\eta v=(r,\rev{c},a,d),\qquad
+\hat\zeta v=(\rev{r},\rev{c},\refl{d},\refl{a});
+\]
+that is, \(\hat\tau=t\), \(\hat\eta=h\) and \(\hat\zeta=z\).
+\end{proof}
+
+Define six subspaces of \(V\):
+\begin{align*}
+\VA&=\{v\in V\mid tv=v,\ hv=v\}, & \VBa&=\{v\in V\mid tv=-v,\ hv=v\},\\
+\VBb&=\{v\in V\mid tv=v,\ hv=-v\}, & W&=\{v\in V\mid tv=-v,\ hv=-v\},\\
+\VE&=\{v\in V\mid zv=-v,\ hv=v\}, & \VEp&=\{v\in V\mid zv=-v,\ hv=-v\}.
+\end{align*}
+For a subspace \(U\) with \(MU\subseteq U\) and a real \(\mu\), write
+\(\kappa_U(\mu)=\dim\ker\bigl((M-\mu I)|_U\bigr)\).
+
+\begin{lemma}\label{lem:sectors}
+\begin{enumerate}
+\item[(a)] \(W=0\), and
+\begin{align}
+\VA&=\{(r,r,d,d)\mid r\text{ palindromic},\ d\text{ even}\},\label{eq:VA}\\
+\VBa&=\{(r,-r,0,0)\mid r\text{ palindromic}\},\label{eq:VB1}\\
+\VBb&=\{(0,0,d,-d)\mid d\text{ even}\},\label{eq:VB2}\\
+\VE&=\{(r,0,d,d)\mid r\text{ antipalindromic},\ d\text{ odd}\}.\label{eq:VE}
+\end{align}
+Their dimensions are \(\lceil n/2\rceil+n\), \(\lceil n/2\rceil\), \(n\) and
+\(\lfloor n/2\rfloor+n-1\).
+\item[(b)] \(V=\VA\oplus\VBa\oplus\VBb\oplus\VE\oplus\VEp\).
+\item[(c)] Each of the five subspaces in (b) is \(M\)-invariant, and \(t\) restricts to
+a linear bijection \(\VE\to\VEp\) that commutes with \(M\).
+\item[(d)] For every real \(\mu\),
+\[
+\dim\ker(M-\mu I)=\kappa_{\VA}(\mu)+\kappa_{\VBa}(\mu)+\kappa_{\VBb}(\mu)
++2\kappa_{\VE}(\mu).
+\]
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Part (a) uses only \eqref{eq:ops}. Part (b) uses Lemma~\ref{lem:sym}(a) and part (a).
+Part (c) uses Lemma~\ref{lem:sym}. Part (d) uses parts (b) and (c).
+
+(a) Write \(v=(r,c,d,a)\). By \eqref{eq:ops}:
+\(tv=v\) means \(c=r\) and \(d\) even;
+\(tv=-v\) means \(c=-r\), \(d\) odd and \(a=0\);
+\(hv=v\) means \(c\) palindromic and \(a=d\);
+\(hv=-v\) means \(r=0\), \(c\) antipalindromic and \(a=-d\);
+\(zv=-v\) means \(r\) and \(c\) antipalindromic and \(d\) and \(a\) odd.
+Combining these: for \(\VA\), \(c=r\) is palindromic and \(a=d\) is even, which is
+\eqref{eq:VA}. For \(\VBa\), \(c=-r\) is palindromic and \(d=a=0\), which is
+\eqref{eq:VB1}. For \(\VBb\), \(r=0\), \(c=r=0\), \(d\) is even and \(a=-d\), which is
+\eqref{eq:VB2}. For \(W\), \(r=0\), \(c=-r=0\), \(a=0\) and \(d=-a=0\); so \(W=0\). For
+\(\VE\), \(c\) is both palindromic and antipalindromic, so \(c=0\); \(r\) is
+antipalindromic, and \(a=d\) is odd; this is \eqref{eq:VE}. The dimensions follow by
+counting free coordinates: a palindromic \(r\) has \(\lceil n/2\rceil\) free entries, an
+antipalindromic one \(\lfloor n/2\rfloor\), an even \(d\) has \(n\) (namely
+\(d_0,\dots,d_{n-1}\)), and an odd \(d\) has \(n-1\) (namely \(d_1,\dots,d_{n-1}\)).
+
+(b) Put \(V_{\pm}=\ker(z\mp I)\). Since \(z^2=I\), every \(v\) equals
+\(\frac12(v+zv)+\frac12(v-zv)\), with the first term in \(V_+\) and the second in
+\(V_-\), and \(V_+\cap V_-=0\). So \(V=V_+\oplus V_-\). Since \(t\) and \(h\) commute with
+\(z\) (Lemma~\ref{lem:sym}(a)), they map \(V_+\) into \(V_+\) and \(V_-\) into \(V_-\).
+
+\emph{The part \(V_+\).} For \(v\in V_+\) we have \(htv\in V_+\), hence
+\(thv=z(htv)=htv\) by Lemma~\ref{lem:sym}(a). So \(t\) and \(h\) restrict to commuting
+involutions of \(V_+\). For signs \(\varepsilon,\delta\in\{1,-1\}\) put
+\(\pi_{\varepsilon\delta}=\frac14(I+\varepsilon t)(I+\delta h)\) on \(V_+\). Then
+\(\sum_{\varepsilon,\delta}\pi_{\varepsilon\delta}=\frac14(2I)(2I)=I\). Since \(t\) and
+\(h\) commute on \(V_+\), and \(t(I+\varepsilon t)=\varepsilon(I+\varepsilon t)\),
+\(h(I+\delta h)=\delta(I+\delta h)\), every vector \(w=\pi_{\varepsilon\delta}v\) with
+\(v\in V_+\) satisfies \(tw=\varepsilon w\) and \(hw=\delta w\). Conversely, if
+\(w\in V_+\), \(tw=\varepsilon'w\) and \(hw=\delta'w\), then
+\(\pi_{\varepsilon\delta}w=\frac14(1+\varepsilon\varepsilon')(1+\delta\delta')w\), which
+is \(w\) if \((\varepsilon,\delta)=(\varepsilon',\delta')\) and \(0\) otherwise. Hence
+\(V_+\) is the direct sum of the four spaces
+\(\{v\in V_+\mid tv=\varepsilon v,\ hv=\delta v\}\): they span \(V_+\), and applying
+\(\pi_{\varepsilon\delta}\) to a vanishing sum of vectors, one from each space, shows
+that each summand is zero. Moreover, any \(v\in V\) with \(tv=\varepsilon v\) and
+\(hv=\delta v\) lies in \(V_+\), because \(zv=(th)^2v=(\varepsilon\delta)^2v=v\). So the
+four spaces are \(\VA\), \(\VBa\), \(\VBb\) and \(W\). By part (a), \(W=0\). Hence
+\(V_+=\VA\oplus\VBa\oplus\VBb\).
+
+\emph{The part \(V_-\).} Since \(h\) is an involution of \(V_-\), the same argument as
+for \(z\) gives \(V_-=\{v\in V_-\mid hv=v\}\oplus\{v\in V_-\mid hv=-v\}=\VE\oplus\VEp\).
+This proves (b).
+
+(c) If \(g\in\{t,h,z\}\) and \(gv=\varepsilon v\), then \(g(Mv)=M(gv)=\varepsilon Mv\) by
+Lemma~\ref{lem:sym}(b). Each of the five subspaces is defined by conditions of this
+form, so it is \(M\)-invariant. Let \(v\in\VE\). Then \(z(tv)=t(zv)=-tv\). Multiplying
+\(th=zht\) on the left by \(z\) gives \(ht=zth\), so \(h(tv)=zt(hv)=z(tv)=-tv\). Hence
+\(tv\in\VEp\). In the same way, for \(v\in\VEp\) we get \(z(tv)=-tv\) and
+\(h(tv)=zt(hv)=-z(tv)=tv\), so \(tv\in\VE\). Since \(t^2=I\), the map
+\(t\colon\VE\to\VEp\) is a bijection with inverse \(t\), and it commutes with \(M\).
+
+(d) Let \(V=\bigoplus_i U_i\) with \(MU_i\subseteq U_i\), and write \(v=\sum_i u_i\) with
+\(u_i\in U_i\). Then \((M-\mu I)v=\sum_i(M-\mu I)u_i\) with \((M-\mu I)u_i\in U_i\), so
+\((M-\mu I)v=0\) if and only if \((M-\mu I)u_i=0\) for all \(i\). Hence
+\(\ker(M-\mu I)=\bigoplus_i\ker\bigl((M-\mu I)|_{U_i}\bigr)\). Apply this to the
+decomposition (b), whose summands are \(M\)-invariant by (c). By (c), \(t\) maps
+\(\ker((M-\mu I)|_{\VE})\) bijectively onto \(\ker((M-\mu I)|_{\VEp})\), so
+\(\kappa_{\VEp}(\mu)=\kappa_{\VE}(\mu)\).
+\end{proof}
+
+As a check (not used later), the dimensions in (a), with \(\VE\) counted twice, add up to
+\(2\lceil n/2\rceil+2\lfloor n/2\rfloor+4n-2=6n-2=\dim V\).
+
+% ==================================================================
+\section{The action of \texorpdfstring{\(M\)}{M} on the sectors}\label{sec:action}
+% ==================================================================
+
+\begin{lemma}\label{lem:action}
+For \(v=(r,c,d,a)\in V\), \(0\le i\le n-1\) and \(0\le k\le n-1\),
+\begin{align}
+(Mv)_{R_i}&=nr_i+\sum_{j=0}^{n-1}c_j+\sum_{k'=i-n+1}^{i}d_{k'}
++\sum_{s=i-n+1}^{i}a_s,\label{eq:Mrow}\\
+(Mv)_{D_k}&=(n-k)d_k+\sum_{i'=k}^{n-1}r_{i'}+\sum_{j=0}^{n-1-k}c_j
++\sum_{s\in S(n-1-k)}a_s.\label{eq:Mdiag}
+\end{align}
+Consequently, with the notation \eqref{eq:T}:
+\begin{enumerate}
+\item[(i)] for \(v=(r,r,d,d)\in\VA\):
+\begin{equation}\label{eq:actA}
+\begin{gathered}
+(Mv)_{R_i}=nr_i+R+2\sum_{k'=i-n+1}^{i}d_{\abs{k'}},\\
+(Mv)_{D_k}=(n-k)d_k+2\rho_k+T_{n-1-k};
+\end{gathered}
+\end{equation}
+\item[(ii)] for \(v=(r,-r,0,0)\in\VBa\):
+\begin{equation}\label{eq:actB1}
+(Mv)_{R_i}=nr_i-R;
+\end{equation}
+\item[(iii)] for \(v=(0,0,d,-d)\in\VBb\):
+\begin{equation}\label{eq:actB2}
+(Mv)_{D_k}=(n-k)d_k-T_{n-1-k};
+\end{equation}
+\item[(iv)] for \(v=(r,0,d,d)\in\VE\) and \(1\le k\le n-1\):
+\begin{equation}\label{eq:actE}
+(Mv)_{R_i}=nr_i+2\sum_{k'=i-n+1}^{i}d_{k'},\qquad (Mv)_{D_k}=(n-k)d_k+\rho_k.
+\end{equation}
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+By \eqref{eq:Nv}, \((Mv)_L=\sum_{(i,j)\in L}\bigl(r_i+c_j+d_{i-j}+a_{i+j-(n-1)}\bigr)\).
+
+For \(L=R_i\) the squares are \((i,j)\), \(0\le j\le n-1\). As \(j\) runs through
+\(0,\dots,n-1\), the index \(i-j\) runs once through \(i-n+1,\dots,i\), and so does the
+index \(i+j-(n-1)\). This is \eqref{eq:Mrow}.
+
+For \(L=D_k\) with \(0\le k\le n-1\) the squares are \((i',i'-k)\) with
+\(k\le i'\le n-1\); there are \(n-k\) of them. The row index \(i'\) runs through
+\(k,\dots,n-1\). The column index \(i'-k\) runs through \(0,\dots,n-1-k\). The
+antidiagonal index is \(i'+(i'-k)-(n-1)=-(n-1-k)+2(i'-k)\), which runs once through
+\(S(n-1-k)\). This is \eqref{eq:Mdiag}.
+
+(i) Here \(c=r\), so \(\sum_jc_j=R\). Since \(a=d\) is even, both sums over \(d\) and
+\(a\) in \eqref{eq:Mrow} equal \(\sum_{k'=i-n+1}^{i}d_{\abs{k'}}\). In \eqref{eq:Mdiag},
+\[
+\sum_{j=0}^{n-1-k}c_j=\sum_{j=0}^{n-1-k}r_{n-1-j}=\sum_{i'=k}^{n-1}r_{i'}=\rho_k
+\]
+because \(r\) is palindromic, and
+\(\sum_{s\in S(n-1-k)}a_s=\sum_{s\in S(n-1-k)}d_{\abs{s}}=T_{n-1-k}\).
+(ii) Put \(c=-r\) and \(d=a=0\) in \eqref{eq:Mrow}.
+(iii) Put \(r=c=0\) and \(a_s=-d_{\abs{s}}\) in \eqref{eq:Mdiag}.
+(iv) Put \(c=0\) and \(a=d\) in \eqref{eq:Mrow}. In \eqref{eq:Mdiag},
+\(\sum_{s\in S(n-1-k)}a_s=\sum_{s\in S(n-1-k)}d_s=0\), because \(S(n-1-k)\) is symmetric
+under \(s\mapsto-s\) and \(d\) is odd.
+\end{proof}
+
+\begin{remark}[which components decide]\label{rem:components}
+Let \(U\) be one of \(\VA,\VBa,\VBb,\VE\) and let \(v\in U\). By
+Lemma~\ref{lem:sectors}(c), \((M-nI)v\in U\). By \eqref{eq:VA}--\eqref{eq:VE}, a vector
+of \(\VA\) is determined by its components on the \(R_i\) (\(0\le i\le n-1\)) and the
+\(D_k\) (\(0\le k\le n-1\)); a vector of \(\VBa\) by its components on the \(R_i\); a
+vector of \(\VBb\) by its components on the \(D_k\) (\(0\le k\le n-1\)); and a vector of
+\(\VE\) by its components on the \(R_i\) (\(0\le i\le n-1\)) and the \(D_k\)
+(\(1\le k\le n-1\)). So \((M-nI)v=0\) if and only if those components of \((M-nI)v\)
+vanish. Lemma~\ref{lem:action} gives exactly those components.
+\end{remark}
+
+% ==================================================================
+\section{The sectors \texorpdfstring{\(B_1\)}{B1} and \texorpdfstring{\(E\)}{E} at
+\texorpdfstring{\(\mu=n\)}{mu=n}}\label{sec:B1E}
+% ==================================================================
+
+\begin{lemma}[sector \(B_1\)]\label{lem:B1}
+We have
+\[
+\ker\bigl((M-nI)|_{\VBa}\bigr)=\Bigl\{(r,-r,0,0)\Bigm| r\text{ palindromic},\ \sum_ir_i=0\Bigr\},
+\]
+and \(\kappa_{\VBa}(n)=\lceil n/2\rceil-1\).
+\end{lemma}
+
+\begin{proof}
+Let \(v=(r,-r,0,0)\in\VBa\). By \eqref{eq:actB1}, the \(R_i\)-component of \((M-nI)v\) is
+\(-R\) for every \(i\). By Remark~\ref{rem:components}, \((M-nI)v=0\) if and only if
+\(R=0\). The linear form \(r\mapsto R\) on the \(\lceil n/2\rceil\)-dimensional space of
+palindromic vectors is not zero (it takes the value \(n\) at \(r=(1,\dots,1)\)), so its
+kernel has dimension \(\lceil n/2\rceil-1\).
+\end{proof}
+
+\begin{lemma}[sector \(E\)]\label{lem:E}
+\(\kappa_{\VE}(n)=0\).
+\end{lemma}
+
+\begin{proof}
+We write out the equations, difference consecutive row equations, and use a symmetry of
+the partial sums \(\rho_k\). Let \(v=(r,0,d,d)\in\VE\), with \(r\) antipalindromic and
+\(d\) odd, and suppose \((M-nI)v=0\). By \eqref{eq:actE} and
+Remark~\ref{rem:components} this means
+\begin{align*}
+(\mathrm{row}_i)&\quad 2\sum_{k'=i-n+1}^{i}d_{k'}=0\quad(0\le i\le n-1),\\
+(\mathrm{diag}_k)&\quad -kd_k+\rho_k=0\quad(1\le k\le n-1).
+\end{align*}
+
+\emph{Step 1.} For \(1\le i\le n-1\), subtract \((\mathrm{row}_{i-1})\) from
+\((\mathrm{row}_i)\). The window of summation moves from \([i-n,i-1]\) to
+\([i-n+1,i]\), so the difference is \(2(d_i-d_{i-n})=2(d_i+d_{n-i})\), because \(d\) is
+odd and \(1\le n-i\le n-1\). Hence \(d_i+d_{n-i}=0\) for \(1\le i\le n-1\).
+
+\emph{Step 2.} Since \(r\) is antipalindromic, \(\rho_0=\sum_ir_i=0\), and for
+\(0\le k\le n\),
+\[
+\rho_{n-k}=\sum_{i\ge n-k}r_i=-\sum_{i\ge n-k}r_{n-1-i}=-\sum_{j=0}^{k-1}r_j
+=-(\rho_0-\rho_k)=\rho_k.
+\]
+
+\emph{Step 3.} By \((\mathrm{diag}_k)\), \(d_k=\rho_k/k\) for \(1\le k\le n-1\).
+Inserting this and Step~2 into Step~1 gives, for \(1\le k\le n-1\),
+\[
+0=d_k+d_{n-k}=\frac{\rho_k}{k}+\frac{\rho_{n-k}}{n-k}
+=\rho_k\Bigl(\frac1k+\frac1{n-k}\Bigr).
+\]
+The bracket is positive, so \(\rho_k=0\) for \(1\le k\le n-1\). Together with
+\(\rho_0=\rho_n=0\) this gives \(r_i=\rho_i-\rho_{i+1}=0\) for all \(i\), and
+\(d_k=\rho_k/k=0\) for \(1\le k\le n-1\). So \(v=0\).
+\end{proof}
+
+% ==================================================================
+\section{The sector \texorpdfstring{\(A_1\)}{A1} at
+\texorpdfstring{\(\mu=n\)}{mu=n}}\label{sec:A1}
+% ==================================================================
+
+The key to this sector is an identity for the sums \(T_m\) of \eqref{eq:T}, valid when
+\(d\) has an extra symmetry.
+
+\begin{lemma}[window identity]\label{lem:window}
+Let \(d_0,\dots,d_{n-1}\) be real numbers with \(d_{n-k}=d_k\) for \(1\le k\le n-1\). Put
+\[
+P_0=\sum_{\substack{0\le s\le n-1\\ s\text{ even}}}d_s,\qquad
+P_1=\sum_{\substack{0\le s\le n-1\\ s\text{ odd}}}d_s.
+\]
+Then for \(0\le k\le n-1\),
+\[
+T_{n-1-k}+T_{k-1}=
+\begin{cases}
+D, & n\text{ odd},\\
+2P_1, & n\text{ even and } k\text{ even},\\
+2P_0, & n\text{ even and } k\text{ odd}.
+\end{cases}
+\]
+\end{lemma}
+
+\begin{proof}
+Let \(g\colon\Z\to\R\) be the \(n\)-periodic function with \(g(s)=d_s\) for
+\(0\le s\le n-1\). For \(1\le s\le n-1\) we have \(g(-s)=g(n-s)=d_{n-s}=d_s\) by the
+hypothesis. Hence \(g(s)=d_{\abs{s}}\) for all \(\abs{s}\le n-1\), and by \eqref{eq:T},
+\(T_m=\sum_{s\in S(m)}g(s)\) for \(0\le m\le n-1\).
+
+Fix \(0\le k\le n-1\). The set \(S(n-1-k)\) consists of the \(n-k\) integers
+\(k+1-n+2j\) with \(0\le j\le n-1-k\). If \(k\ge1\), the set \(S(k-1)\) consists of the
+\(k\) integers \(1-k+2i\) with \(0\le i\le k-1\). By periodicity
+\(g(1-k+2i)=g(n+1-k+2i)\), and \(n+1-k+2i=k+1-n+2j\) for \(j=n-k+i\), which runs through
+\(n-k,\dots,n-1\). Therefore (also for \(k=0\), where \(T_{-1}=0\) and \(j\) already runs
+through \(0,\dots,n-1\))
+\[
+T_{n-1-k}+T_{k-1}=\sum_{j=0}^{n-1}g(k+1-n+2j).
+\]
+If \(n\) is odd, \(2\) is invertible modulo \(n\), so \(j\mapsto k+1-n+2j\) is a
+bijection of \(\Z/n\Z\), and the sum is \(\sum_{s=0}^{n-1}g(s)=D\). If \(n\) is even, the
+terms for \(j\) and \(j+n/2\) are equal. For \(0\le j\le n/2-1\) the residues of
+\(k+1-n+2j\) modulo \(n\) are pairwise distinct, because the numbers \(2j\) are distinct
+elements of \(\{0,2,\dots,n-2\}\). They are all congruent to \(k+1\) modulo \(2\), and
+exactly \(n/2\) residues modulo \(n\) have that parity, so they are all of them. Hence the
+sum is \(2\sum_{0\le s\le n-1,\ s\equiv k+1\ (\mathrm{mod}\ 2)}d_s\), which is \(2P_1\) for even
+\(k\) and \(2P_0\) for odd \(k\).
+\end{proof}
+
+\begin{lemma}[sector \(A_1\)]\label{lem:A1}
+\(\kappa_{\VA}(n)=0\).
+\end{lemma}
+
+\begin{proof}
+We derive five relations (A.1)--(A.5) from the equations, use Lemma~\ref{lem:window} to
+reduce them to a small linear system, and check that this system has only the zero
+solution. Let \(v=(r,r,d,d)\in\VA\), with \(r\) palindromic and \(d\) even (coordinates
+\(d_0,\dots,d_{n-1}\)), and suppose \((M-nI)v=0\). By \eqref{eq:actA} and
+Remark~\ref{rem:components} this means
+\begin{align*}
+(\mathrm{row}_i)&\quad R+2\sum_{k'=i-n+1}^{i}d_{\abs{k'}}=0\quad(0\le i\le n-1),\\
+(\mathrm{diag}_k)&\quad -kd_k+2\rho_k+T_{n-1-k}=0\quad(0\le k\le n-1).
+\end{align*}
+
+(A.1) For \(1\le i\le n-1\), subtracting \((\mathrm{row}_{i-1})\) from
+\((\mathrm{row}_i)\) gives \(2(d_{\abs{i}}-d_{\abs{i-n}})=2(d_i-d_{n-i})=0\). So
+\(d_{n-k}=d_k\) for \(1\le k\le n-1\), and Lemma~\ref{lem:window} applies.
+
+(A.2) \((\mathrm{row}_0)\) reads \(R+2\sum_{k'=-(n-1)}^{0}d_{\abs{k'}}=R+2D=0\).
+
+(A.3) Since \(r\) is palindromic, for \(0\le k\le n\),
+\(\rho_{n-k}=\sum_{i\ge n-k}r_i=\sum_{i\ge n-k}r_{n-1-i}=\sum_{j=0}^{k-1}r_j=R-\rho_k\).
+
+(A.4) For \(1\le k\le n-1\), add \((\mathrm{diag}_k)\) and \((\mathrm{diag}_{n-k})\) and
+use (A.1) and (A.3):
+\begin{align*}
+0&=-kd_k-(n-k)d_{n-k}+2(\rho_k+\rho_{n-k})+T_{n-1-k}+T_{k-1}\\
+&=-nd_k+2R+T_{n-1-k}+T_{k-1}.
+\end{align*}
+
+(A.5) \((\mathrm{diag}_0)\) reads \(2\rho_0+T_{n-1}=2R+T_{n-1}=0\).
+
+\emph{Case \(n\) odd.} By Lemma~\ref{lem:window}, (A.4) becomes \(nd_k=2R+D\) for
+\(1\le k\le n-1\), and (A.5) becomes \(2R+D=0\) (Lemma~\ref{lem:window} with \(k=0\)).
+Hence \(d_k=0\) for \(1\le k\le n-1\), so \(D=d_0\). Then (A.2) and (A.5) form the system
+\[
+\begin{pmatrix}1&2\\2&1\end{pmatrix}\begin{pmatrix}R\\D\end{pmatrix}=0,\qquad
+\det\begin{pmatrix}1&2\\2&1\end{pmatrix}=1\cdot1-2\cdot2=-3\ne0.
+\]
+So \(R=D=0\), hence \(d_0=0\) and \(d=0\).
+
+\emph{Case \(n\) even.} By Lemma~\ref{lem:window}, (A.4) becomes \(nd_k=2R+2P_1\) for
+even \(k\) and \(nd_k=2R+2P_0\) for odd \(k\) (\(1\le k\le n-1\)), and (A.5) becomes
+\(2R+2P_1=0\). Hence \(d_k=0\) for every even \(k\) with \(2\le k\le n-2\), and therefore
+\(P_0=d_0\). Also, all \(d_k\) with \(k\) odd equal one number \(\beta\), where
+\(n\beta=2R+2d_0\). There are \(n/2\) odd indices in \([1,n-1]\), so
+\(P_1=\frac n2\beta\) and \(D=P_0+P_1=d_0+\frac n2\beta\). So \((d_0,\beta,R)\)
+satisfies three equations: \(2d_0-n\beta+2R=0\) (the relation for odd \(k\));
+\(n\beta+2R=0\) (from (A.5)); and \(2d_0+n\beta+R=0\) (from (A.2)). The second gives
+\(R=-\frac n2\beta\). The first then gives \(2d_0=n\beta-2R=2n\beta\). The third then
+gives \(2n\beta+n\beta-\frac n2\beta=\frac52n\beta=0\). So \(\beta=0\), \(R=0\),
+\(d_0=0\) and \(d=0\). Equivalently, the matrix of this linear system is nonsingular:
+\begin{align*}
+\det\begin{pmatrix}2&-n&2\\0&n&2\\2&n&1\end{pmatrix}
+&=2(n\cdot1-2\cdot n)-(-n)(0\cdot1-2\cdot2)+2(0\cdot n-n\cdot2)\\
+&=-2n-4n-4n=-10n\ne0.
+\end{align*}
+
+\emph{Conclusion in both cases.} We have \(d=0\) and \(R=0\). Then \((\mathrm{diag}_k)\)
+gives \(2\rho_k=kd_k-T_{n-1-k}=0\) for \(0\le k\le n-1\). Together with \(\rho_n=0\) this
+gives \(r_i=\rho_i-\rho_{i+1}=0\) for all \(i\). Hence \(v=0\).
+\end{proof}
+
+% ==================================================================
+\section{The sector \texorpdfstring{\(B_2\)}{B2} at
+\texorpdfstring{\(\mu=n\)}{mu=n}}\label{sec:B2}
+% ==================================================================
+
+This sector is handled by a discrete maximum principle.
+
+\begin{lemma}[weighted means]\label{lem:means}
+Let \(I\) be a finite set, \(j_0\in I\), and \((e_j)_{j\in I}\) real numbers. Suppose that
+for every \(j\in I\) with \(j\ne j_0\) there are \(\alpha(j),\beta(j)\in I\) and a real
+number \(\lambda_j\) with \(0<\lambda_j\le1\) such that
+\[
+e_j=\lambda_je_{\alpha(j)}+(1-\lambda_j)e_{\beta(j)},
+\]
+and that for every \(j\in I\) the sequence \(j,\alpha(j),\alpha(\alpha(j)),\dots\)
+reaches \(j_0\) after finitely many steps. Then \(e_j=e_{j_0}\) for all \(j\in I\).
+\end{lemma}
+
+\begin{proof}
+Let \(m=\max_{j\in I}e_j\) and \(Z=\{j\in I\mid e_j=m\}\), a nonempty set. If \(j\in Z\)
+and \(j\ne j_0\), then
+\(m=e_j=\lambda_je_{\alpha(j)}+(1-\lambda_j)e_{\beta(j)}\le\lambda_je_{\alpha(j)}
++(1-\lambda_j)m\), so \(\lambda_j(m-e_{\alpha(j)})\le0\). Since \(\lambda_j>0\) and
+\(e_{\alpha(j)}\le m\), this forces \(e_{\alpha(j)}=m\), that is, \(\alpha(j)\in Z\).
+Take any \(j\in Z\) and follow the sequence \(j,\alpha(j),\alpha(\alpha(j)),\dots\).
+Every term before \(j_0\) is reached lies in \(Z\) and differs from \(j_0\), so its
+successor lies in \(Z\). Since the sequence reaches \(j_0\), we get \(j_0\in Z\), that
+is, \(e_{j_0}=m\). The numbers \((-e_j)_{j\in I}\) satisfy the same hypotheses, so
+\(e_{j_0}=\min_je_j\). Hence \(\max_je_j=\min_je_j\), and all \(e_j\) are equal.
+\end{proof}
+
+\emph{Setup.} Let \(v=(0,0,d,-d)\in\VBb\) with coordinates \(d_0,\dots,d_{n-1}\). By
+\eqref{eq:actB2} and Remark~\ref{rem:components}, \((M-nI)v=0\) if and only if
+\begin{equation}\label{eq:Eq}
+\Eq(k):\quad kd_k+T_{n-1-k}=0\qquad(0\le k\le n-1).
+\end{equation}
+Introduce \(e_0=d_0\) and \(e_k=2d_k\) for \(1\le k\le n-1\), with the conventions
+\(e_n=e_{n+1}=0\). By the formulas after \eqref{eq:T},
+\(T_m=\sum_{0\le j\le m,\ j\equiv m\ (\mathrm{mod}\ 2)}e_j\) for \(0\le m\le n-1\). So
+\begin{equation}\label{eq:Eqe}
+\Eq(k)=\frac k2e_k+\sum_{\substack{0\le j\le n-1-k\\ j\equiv n-1-k\ (\mathrm{mod}\ 2)}}e_j
+\qquad(0\le k\le n-1).
+\end{equation}
+(For \(k=0\) the first term is \(0\); for \(k\ge1\) it is \(kd_k\).) Define, for
+\(0\le k\le n-1\),
+\begin{equation}\label{eq:F}
+F_k=ke_k-(k+2)e_{k+2}+2e_{n-1-k}.
+\end{equation}
+
+\begin{lemma}\label{lem:F}
+Put \(\Eq(n)=\Eq(n+1)=0\). Then \(F_k=2\Eq(k)-2\Eq(k+2)\) for \(0\le k\le n-1\), and
+\(\Eq(k)=\frac12\sum_{i\ge0,\ k+2i\le n-1}F_{k+2i}\). Hence the systems
+\(\{\Eq(k)=0\mid 0\le k\le n-1\}\) and \(\{F_k=0\mid 0\le k\le n-1\}\) have the same
+solutions.
+\end{lemma}
+
+\begin{proof}
+Let \(0\le k\le n-3\). In \eqref{eq:Eqe}, the sums for \(\Eq(k)\) and \(\Eq(k+2)\) run
+over the \(j\) of one and the same parity, up to \(n-1-k\) and up to \(n-3-k\)
+respectively. So they differ by the single term \(e_{n-1-k}\), and
+\(2\Eq(k)-2\Eq(k+2)=ke_k-(k+2)e_{k+2}+2e_{n-1-k}=F_k\). For \(k=n-2\):
+\(\Eq(n-2)=\frac{n-2}2e_{n-2}+e_1\) and \(F_{n-2}=(n-2)e_{n-2}-ne_n+2e_1
+=(n-2)e_{n-2}+2e_1\). For \(k=n-1\): \(\Eq(n-1)=\frac{n-1}2e_{n-1}+e_0\) and
+\(F_{n-1}=(n-1)e_{n-1}-(n+1)e_{n+1}+2e_0=(n-1)e_{n-1}+2e_0\). The second formula follows
+by telescoping.
+\end{proof}
+
+Two consequences of \eqref{eq:F} are used below:
+\begin{gather}
+F_0=0\iff e_2=e_{n-1};\label{eq:F0}\\
+F_k=0\iff e_{k+2}=\frac{k}{k+2}e_k+\frac{2}{k+2}e_{n-1-k}\qquad(1\le k\le n-3).
+\label{eq:Fk}
+\end{gather}
+
+\begin{lemma}[sector \(B_2\)]\label{lem:B2}
+\begin{enumerate}
+\item[(a)] If \(n\) is even, \(\kappa_{\VBb}(n)=0\).
+\item[(b)] If \(n\) is odd, \(\kappa_{\VBb}(n)=1\), and \(\ker((M-nI)|_{\VBb})\) is
+spanned by \((0,0,\dc,-\dc)\), where \(\dc\) is the even vector with \(\dc_0=n-1\),
+\(\dc_k=-1\) for even \(k\) with \(2\le k\le n-1\), and \(\dc_k=0\) for odd \(k\).
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+By \eqref{eq:Eq} and Lemma~\ref{lem:F}, \(v\in\ker((M-nI)|_{\VBb})\) if and only if
+\(F_k=0\) for \(0\le k\le n-1\). Let \(e\) be such a solution. The relations
+\eqref{eq:F0} and \eqref{eq:Fk} express most \(e_j\) as weighted means of two others, so
+Lemma~\ref{lem:means} will show that many of them are equal.
+
+(a) \emph{\(n\) even.} Apply Lemma~\ref{lem:means} with \(I=\{1,2,\dots,n-1\}\) and
+\(j_0=1\). For \(j=2\): \(e_2=e_{n-1}\) by \eqref{eq:F0}; take
+\(\alpha(2)=\beta(2)=n-1\) and \(\lambda_2=1\). For \(3\le j\le n-1\): \eqref{eq:Fk}
+with \(k=j-2\in[1,n-3]\) gives \(e_j=\frac{j-2}{j}e_{j-2}+\frac2je_{n+1-j}\); take
+\(\alpha(j)=j-2\), \(\beta(j)=n+1-j\in[2,n-2]\subseteq I\) and
+\(\lambda_j=\frac{j-2}{j}\in(0,1)\). The sequence \(j,\alpha(j),\dots\) reaches \(1\):
+from an odd \(j\) it descends \(j,j-2,\dots,1\); from an even \(j\) it descends
+\(j,j-2,\dots,2\), then goes to \(n-1\), which is odd because \(n\) is even, and descends
+\(n-1,n-3,\dots,1\). Hence \(e_1=e_2=\dots=e_{n-1}=:c\). Now
+\(F_{n-2}=(n-2)e_{n-2}+2e_1=nc\), so \(c=0\); and \(F_{n-1}=(n-1)e_{n-1}+2e_0=2e_0\), so
+\(e_0=0\). Thus \(e=0\), so \(d=0\) and \(v=0\).
+
+(b) \emph{\(n\) odd}, so \(n\ge5\). Since \(n-1-k\equiv k\pmod 2\), each \(F_k\) involves
+only the \(e_j\) with \(j\equiv k\pmod 2\).
+
+\emph{Even indices.} Apply Lemma~\ref{lem:means} with \(I=\{2,4,\dots,n-1\}\) and
+\(j_0=2\). For even \(j\) with \(4\le j\le n-1\), \eqref{eq:Fk} with \(k=j-2\) (even,
+\(2\le k\le n-3\)) gives \(e_j=\frac{j-2}je_{j-2}+\frac2je_{n+1-j}\), where \(n+1-j\) is
+even and lies in \([2,n-3]\subseteq I\); take \(\alpha(j)=j-2\), \(\beta(j)=n+1-j\) and
+\(\lambda_j=\frac{j-2}{j}\in(0,1)\). The sequence \(j,j-2,\dots\) reaches \(2\). Hence
+\(e_2=e_4=\dots=e_{n-1}=:c\). Then \(F_{n-1}=(n-1)c+2e_0=0\) gives
+\(e_0=-\frac{n-1}2c\).
+
+\emph{Odd indices.} Apply Lemma~\ref{lem:means} with \(I=\{3,5,\dots,n-2\}\) and
+\(j_0=3\); for \(n=5\), \(I=\{3\}\) and there is nothing to do. For odd \(j\) with
+\(5\le j\le n-2\), \eqref{eq:Fk} with \(k=j-2\) (odd, \(3\le k\le n-4\)) gives
+\(e_j=\frac{j-2}je_{j-2}+\frac2je_{n+1-j}\), where \(n+1-j\) is odd and lies in
+\([3,n-4]\subseteq I\); take \(\alpha(j)=j-2\), \(\beta(j)=n+1-j\) and
+\(\lambda_j=\frac{j-2}j\in(0,1)\). The sequence \(j,j-2,\dots\) reaches \(3\). Hence
+\(e_3=e_5=\dots=e_{n-2}=:c'\). Then \(F_{n-2}=(n-2)c'+2e_1=0\) gives
+\(e_1=-\frac{n-2}2c'\), and, since the indices \(3\) and \(n-2\) lie in \(I\),
+\[
+F_1=e_1-3e_3+2e_{n-2}=-\frac{n-2}{2}c'-3c'+2c'=-\frac n2c'.
+\]
+So \(c'=0\), and \(e_j=0\) for every odd \(j\).
+
+Therefore every solution is \(e=-\frac c2(n-1,0,-2,0,-2,\dots,0,-2)\), that is,
+\(d=-\frac c2\dc\). So \(\kappa_{\VBb}(n)\le1\). Conversely, \(\dc\) satisfies
+\eqref{eq:Eq}, by direct substitution. For odd \(k\): \(k\dc_k=0\) and
+\(T_{n-1-k}=2(\dc_1+\dc_3+\dots+\dc_{n-1-k})=0\), since \(n-1-k\) is odd. For \(k=0\):
+\(T_{n-1}=\dc_0+2(\dc_2+\dots+\dc_{n-1})=(n-1)-2\cdot\frac{n-1}2=0\). For even
+\(k=2i\ge2\): \(k\dc_k+T_{n-1-k}=-2i+(n-1)-2\bigl(\frac{n-1}2-i\bigr)=0\). Since
+\(\dc\ne0\), \(\kappa_{\VBb}(n)=1\).
+\end{proof}
+
+Appendix~\ref{app:alt} gives a second, independent proof of Lemma~\ref{lem:B2}. The
+Theorem does not depend on it.
+
+% ==================================================================
+\section{Proof of the Theorem, and the eigenspace}\label{sec:main}
+% ==================================================================
+
+\begin{proof}[Proof of the Theorem]
+By Lemma~\ref{lem:gram}, the multiplicity of \(n-4\) is \(\dim\ker(M-nI)\). By
+Lemma~\ref{lem:sectors}(d) with \(\mu=n\), and Lemmas~\ref{lem:A1}, \ref{lem:B1},
+\ref{lem:B2} and \ref{lem:E} for the four terms,
+\[
+\dim\ker(M-nI)=\underbrace{0}_{A_1}+\underbrace{\lceil n/2\rceil-1}_{B_1}
++\underbrace{\iv{n\text{ odd}}}_{B_2}+2\cdot\underbrace{0}_{E}.
+\]
+For even \(n\) this is \(\frac n2-1=\frac{n-2}2\). For odd \(n\) it is
+\(\frac{n+1}2-1+1=\frac{n+1}2\). Both numbers are at least \(1\) for \(n\ge4\), so
+\(n-4\) is an eigenvalue.
+\end{proof}
+
+\begin{corollary}\label{cor:eigenspace}
+For \(n\ge4\), the eigenspace of \(\Adj\) for the eigenvalue \(n-4\) consists of the
+functions on the board
+\[
+x(i,j)=r_i-r_j+\gamma\bigl(\iv{i=j}-\iv{i+j=n-1}\bigr),
+\]
+where \(r\in\R^n\) is palindromic and \(\gamma\in\R\), with \(\gamma=0\) if \(n\) is even.
+This description is due to Cardoso, Costa and Duarte; see Remark~\ref{rem:credit}.
+\end{corollary}
+
+\begin{proof}
+By Lemma~\ref{lem:gram}, the eigenspace is \(N\ker(M-nI)\). By the proof of
+Lemma~\ref{lem:sectors}(d), \(\ker(M-nI)\) is the direct sum of the kernels of \(M-nI\)
+on the five sectors. The kernels on \(\VA\), \(\VE\) and \(\VEp\) are zero
+(Lemmas~\ref{lem:A1} and \ref{lem:E}, and Lemma~\ref{lem:sectors}(c) for \(\VEp\)). So,
+by Lemmas~\ref{lem:B1} and \ref{lem:B2}, \(\ker(M-nI)\) is spanned by the vectors
+\((r,-r,0,0)\) with \(r\) palindromic and \(\sum_ir_i=0\), together with
+\((0,0,\dc,-\dc)\) when \(n\) is odd. By \eqref{eq:Nv}, \(N(r,-r,0,0)(i,j)=r_i-r_j\).
+This expression does not change when a constant is added to \(r\), so the condition
+\(\sum_ir_i=0\) can be dropped. For odd \(n\),
+\(N(0,0,\dc,-\dc)(i,j)=\dc_{\abs{i-j}}-\dc_{\abs{i+j-(n-1)}}\). Here \(i-j\) and
+\(i+j-(n-1)\) have the same parity, because \(n-1\) is even. If both are odd, the value
+is \(0-0=0\). If both are even, the value is \((n-1)-(-1)=n\) when \(i=j\) and
+\(i+j\ne n-1\); it is \((-1)-(n-1)=-n\) when \(i\ne j\) and \(i+j=n-1\); and it is \(0\)
+when both or neither of \(i=j\), \(i+j=n-1\) hold. So
+\(N(0,0,\dc,-\dc)=n\bigl(\iv{i=j}-\iv{i+j=n-1}\bigr)\).
+\end{proof}
+
+\begin{remark}[credit for the eigenspace]\label{rem:credit}
+Cardoso, Costa and Duarte proved that the multiplicity of \(n-4\) is at least the value
+in the Theorem, by exhibiting linearly independent eigenvectors. They did so first in
+\cite[Theorem~3.10]{CCD20}, for \(n\ge3\), and restated it in
+\cite[Theorem~4.1 and Corollary~4.2]{CCD23}. With squares indexed from \(1\), their
+eigenvectors are of two kinds. The first kind (the set \(Y^n\) defined after
+\cite[Definition~3.9]{CCD20}, the vectors \(F_{n,\ell}\) of \cite{CCD23}) is the
+indicator of the columns \(\ell\) and \(n+1-\ell\) minus the indicator of the rows
+\(\ell\) and \(n+1-\ell\). (When \(n\) is odd and \(\ell=(n+1)/2\), the two columns
+coincide, as do the two rows; the vector of \(Y^n\) is then twice this indicator
+difference, while \(F_{n,\ell}\) equals it.) In our notation
+this is \(x(i,j)=r_i-r_j\) with \(r=-\iv{i\in\{\ell-1,n-\ell\}}\), a palindromic \(r\).
+So the first summand in Corollary~\ref{cor:eigenspace} is the span of these vectors. The
+second kind, used for odd \(n\) (the set \(Z^n\) of \cite{CCD20}, the vector
+\(E_{n,n-4}\) of \cite{CCD23}), is a nonzero multiple of the indicator of the main
+diagonal minus the indicator of the antidiagonal (also defined after
+\cite[Definition~3.9]{CCD20}); with our indexing it is a multiple of
+\(\iv{i=j}-\iv{i+j=n-1}\), the \(\gamma\)-term. As printed in \cite{CCD20}, the set \(Y^n\) has
+\(\lceil n/2\rceil\) vectors with one linear relation, and the proof there uses
+\(\lceil n/2\rceil-1\) of them, together with \(Z^n\) for odd \(n\), as linearly independent
+eigenvectors; so the number of linearly independent ones, \((n-2)/2\) resp.\ \((n+1)/2\), is a
+lower bound on the multiplicity. Hence their eigenvectors span the space
+described in Corollary~\ref{cor:eigenspace}, and once the Theorem bounds the
+multiplicity from above, they span the whole eigenspace. The description of the
+eigenspace is therefore theirs.
+The exact value, equivalently the upper bound (the Theorem), is conjectured but not proved in their papers (\cite[Conjecture~3]{CCD20}; \cite[Conjecture~1]{CCD23}; \cite[Conjecture~4.1]{CCD25}); whether a proof of it,
+or the method used here, appears elsewhere has not been checked beyond our literature search of 2026-11-27.
+We checked these theorem numbers and definitions against the PDFs of both papers on
+2026-11-27, and the identification by exact computation for small \(n\).
+\end{remark}
+
+% ==================================================================
+\section{Computer verification}\label{sec:computer}
+% ==================================================================
+
+No step of the proof uses a computer. The computations in this section confirm the
+Theorem, and the individual steps of its proof, for finitely many \(n\). All of them use
+exact integer or rational arithmetic; none uses floating point. We call a computation a
+\emph{certificate} when it has been rerun from a clean copy, reproduced by an
+independent second implementation, and archived with its tool versions. None of the
+checks below has yet been archived as a certificate in that sense, so we label them
+\emph{numerical}.
+
+The scripts and their archived outputs are in the folder \nolinkurl{scripts/} of the
+accompanying repository,
+\begin{center}
+\footnotesize\url{https://github.com/nebulousice/cardoso-costa-duarte-queens-conjecture},
+\end{center}
+and every command below is run from that folder. The software was
+Python~3.12.10, python-flint~0.7.1 and sympy~1.14.0, on Windows~11. The file
+\nolinkurl{REPRODUCE.md} gives runtimes and the expected output lines.
+
+\begin{center}
+\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.40\textwidth}%
+>{\raggedright\arraybackslash}p{0.17\textwidth}%
+>{\raggedright\arraybackslash}p{0.31\textwidth}@{}}
+\toprule
+Check & Range & Status\\
+\midrule
+Nullity of \(M-nI\), full matrix, two rank algorithms & \(4\le n\le40\) &
+numerical (exact arithmetic, two implementations)\\
+Nullity of \(M-nI\) on each sector & \(4\le n\le150\) & numerical (exact arithmetic)\\
+Replay of every identity in the proof & \(4\le n\le40\) & numerical (exact arithmetic)\\
+Nullity of \(\Adj-(n-4)I\) & \(4\le n\le12\) & numerical (exact arithmetic)\\
+Individual steps of Lemmas~\ref{lem:sectors}, \ref{lem:action}, \ref{lem:E},
+\ref{lem:A1}, \ref{lem:B2}, the appendix and Lemma~G & \(4\le n\le40\);
+\(q\le80\) & numerical (exact arithmetic)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{enumerate}
+\item \emph{Nullity of \(M-nI\), \(4\le n\le40\).} For each \(n\) the integer matrix
+\(M-nI\) is built square by square from the board, with no symmetry used. Its rank over
+\(\mathbb{Q}\) is computed twice: by FLINT's exact integer rank, and by pure-Python
+fraction-free (Bareiss) elimination. Both runs build the matrix with the same routine;
+they differ in the rank algorithm. For every \(n\) in the range both give nullity
+\((n-2)/2\) for even \(n\) and \((n+1)/2\) for odd \(n\). Commands:
+\begin{verbatim}
+python p2_verify.py fullflint 4 40
+python p2_verify.py fraction 4 16
+python p2_verify.py fraction 17 40
+\end{verbatim}
+Archived outputs: \nolinkurl{scripts/logs/fullflint_4_40.log},
+\nolinkurl{scripts/logs/fraction_4_16.log}, \nolinkurl{scripts/logs/fraction_17_40.log}.
+
+The same script also checks three groups of proof steps in exact rational arithmetic,
+for every \(n\) with \(4\le n\le40\): the reduced linear systems in the proof of
+Lemma~\ref{lem:A1}, both parts of the appendix, and Lemma~G for \(3\le q\le40\).
+Command:
+\begin{verbatim}
+python p2_verify.py lemmas 4 40
+\end{verbatim}
+Archived output: \nolinkurl{scripts/logs/verify_lemmas_4_40.log}.
+
+\item \emph{Nullities on the sectors.} The sector matrices are written from
+\eqref{eq:actA}--\eqref{eq:actE}, and their nullities at \(\mu=n\) are computed with
+FLINT. They are \(0\) for \(A_1\), \(\lceil n/2\rceil-1\) for \(B_1\),
+\(\iv{n\text{ odd}}\) for \(B_2\) and \(0\) for \(E\), for every \(n\) with
+\(4\le n\le150\). For \(41\le n\le150\) this is the only computation. Commands:
+\begin{verbatim}
+python p2_verify.py sectors 4 40
+python p2_verify.py sectors 41 150
+\end{verbatim}
+The archived outputs are the files \nolinkurl{sectors_flint_4_40.log} and
+\nolinkurl{sectors_flint_41_150.log} in the folder \nolinkurl{scripts/logs/}.
+
+\item \emph{Replay of every identity in the proof, \(4\le n\le40\).} A separate
+pure-Python script rebuilds everything from the board. For each \(n\) it checks
+Lemma~\ref{lem:clique} (for \(n\le24\)), the relations of Lemma~\ref{lem:sym}, the
+sector decomposition, the formulas of Lemma~\ref{lem:action}, the identities in the
+proofs of Lemmas~\ref{lem:E}, \ref{lem:window} and \ref{lem:A1}, Lemma~\ref{lem:F} and
+the conclusions of Lemma~\ref{lem:B2}, and \(\dim\ker(M-nI)\). The last check uses the
+rank modulo the prime \(2^{31}-1\), which bounds the nullity from above, together with
+explicit kernel vectors, which bound it from below. It also checks
+Corollary~\ref{cor:eigenspace} on the adjacency matrix (\(n\le16\)) and the appendix
+(\(q\le60\)). Command:
+\begin{verbatim}
+python prover_check.py 4 40
+\end{verbatim}
+Archived output: \nolinkurl{scripts/logs/replay_4_40.log}. Its last line is
+\texttt{PROVER REPLAY: ALL PASS}.
+
+\item \emph{The adjacency matrix directly, \(4\le n\le12\).} The nullity of
+\(\Adj-(n-4)I\) is computed on the \(n^2\times n^2\) matrix with FLINT, and the vectors
+of Corollary~\ref{cor:eigenspace} are checked to lie in the kernel and to have full
+rank. Command:
+\begin{verbatim}
+python p2_verify.py adjacency 4 12
+\end{verbatim}
+Archived output: \nolinkurl{scripts/logs/adjacency_4_12.log}.
+
+\item \emph{Individual steps.} A third script, written independently of the other two,
+checks from the board the sector formulas, the steps of Lemmas~\ref{lem:E},
+\ref{lem:A1} and \ref{lem:B2}, and the pivots in the proof of Lemma~G
+(\(1\le q\le80\)). Commands:
+\begin{verbatim}
+python p2_proofcheck.py sectors 4 40
+python p2_proofcheck.py a1 4 40
+python p2_proofcheck.py e 4 40
+python p2_proofcheck.py b2 4 40
+python p2_proofcheck.py g 1 80
+python p2_proofcheck.py symbolic
+\end{verbatim}
+Archived outputs: the files \nolinkurl{scripts/logs/proofcheck_*.log}.
+\end{enumerate}
+
+% ==================================================================
+\section{Formal verification}\label{sec:formal}
+% ==================================================================
+
+The Theorem and Corollary~\ref{cor:eigenspace} are formalized in the proof assistant
+Lean~4 (version 4.37.0-rc1), using the
+mathematics library Mathlib at the commit pinned in the file
+\nolinkurl{lean/lake-manifest.json} of the accompanying repository. ``Formalized'' means
+that Lean checks a complete proof of the statement, step by step, from the definitions,
+and that no step is assumed without proof. This section says what the Lean files state,
+what a reader has to trust, how the check was run, how the Lean proof is organized, and
+what is not formalized. The Lean files are in the folder
+\nolinkurl{lean/Pipeline/QueensSpectrum/} of the accompanying repository (12 files,
+2283 lines); the file \nolinkurl{LEAN.md} at the top level of the repository gives more
+detail.
+
+\subsection{The definition of the graph}
+In Lean a square is a pair \(x=(x_1,x_2)\) of numbers in \(\{0,1,\dots,n-1\}\), as in
+Section~\ref{sec:notation}. The file \nolinkurl{Defs.lean} defines the relation
+\(\mathrm{Attack}\) (lines~27--29) and the graph \lean{queensGraph n} (adjacency
+rule on line~34). In mathematical notation they read
+\begin{align*}
+\mathrm{Attack}(x,y)&\iff x_1=y_1\ \text{or}\ x_2=y_2\ \text{or}\ x_1-x_2=y_1-y_2\\
+&\qquad\text{or}\ x_1+x_2=y_1+y_2,\\
+x\text{ and }y\text{ are adjacent}&\iff x\ne y\ \text{and}\ \mathrm{Attack}(x,y).
+\end{align*}
+The differences and sums are computed in \(\Z\), so there is no arithmetic modulo \(n\).
+This is the definition of \(\QG(n)\) in Section~\ref{sec:notation}. These four lines of
+Lean are the only definitions of this work that appear in the statements of the Theorem
+and of Corollary~\ref{cor:eigenspace}.
+
+\subsection{The statement proved}
+The main results are in the file \nolinkurl{Main.lean}. Let \(K\) be a \emph{linearly
+ordered field}: a field with a total order compatible with addition and multiplication,
+such as \(\mathbb{Q}\) or \(\R\). Let \(\Adj_K\) be the adjacency matrix of \(\QG(n)\)
+with entries in \(K\) (Mathlib's \lean{SimpleGraph.adjMatrix}). For every such
+\(K\) and every integer \(n\ge4\), Lean proves the following.
+\begin{itemize}
+\item \lean{queens\_mult}: the dimension over \(K\) of
+\(\ker\bigl(\Adj_K-(n-4)I\bigr)\) is \((n-2)/2\) if \(n\) is even and \((n+1)/2\) if \(n\)
+is odd.
+\item \lean{queens\_alg\_mult}: the multiplicity of \(n-4\) as a root of the
+characteristic polynomial of \(\Adj_K\) is the same number.
+\item \lean{queens\_hasEigenvalue}: \(n-4\) is an eigenvalue of \(\Adj_K\).
+\end{itemize}
+The theorems \lean{queens\_mult\_real}, \lean{queens\_mult\_rat} and
+\lean{queens\_alg\_mult\_real} are the cases \(K=\R\) and \(K=\mathbb{Q}\). In the
+Lean text the right-hand side is a natural number computed with truncating division.
+For \(n\ge4\) the division is exact, so the value is the stated one.
+
+For \(K=\R\) this is exactly the Theorem of Section~\ref{sec:intro}, with both readings of
+``multiplicity'' (the dimension of the kernel, and the order as a root of the
+characteristic polynomial). The source indexes squares from \(1\) and Lean from \(0\);
+shifting the indices is a graph isomorphism.
+
+Corollary~\ref{cor:eigenspace} is in the file \nolinkurl{Eigenspace.lean}. For every
+linearly ordered field \(K\), every \(n\ge4\) and every function \(x\) from the squares
+to \(K\), Lean proves the following.
+\begin{itemize}
+\item \lean{queens\_eigenspace}: \(x\) lies in the eigenspace of \(\Adj_K\) for the
+eigenvalue \(n-4\) if and only if there are \(r\in K^n\) with \(r_{n-1-i}=r_i\) for all
+\(i\), and \(\gamma\in K\) with \(\gamma=0\) when \(n\) is even, such that
+\(x(i,j)=r_i-r_j+\gamma\bigl(\iv{i=j}-\iv{i+j=n-1}\bigr)\) for all squares \((i,j)\).
+\end{itemize}
+The theorem \lean{queens\_eigenspace\_real} is the case \(K=\R\). Both inclusions are
+proved, so this is exactly Corollary~\ref{cor:eigenspace}.
+
+\subsection{What has to be trusted}
+A reader who accepts the Lean check needs to trust only the following.
+\begin{enumerate}
+\item The Lean kernel, which checks every proof.
+\item The four lines of definition shown above.
+\item Mathlib's standard notions used in the statement: the adjacency matrix of a
+simple graph, the linear map given by a matrix, the eigenspace of a linear map, the
+dimension of a vector space, the characteristic polynomial, the multiplicity of a root,
+the reversal \(i\mapsto n-1-i\) of \(\{0,\dots,n-1\}\) (used to state that \(r\) is
+palindromic in Corollary~\ref{cor:eigenspace}), and the notions of field, linear order
+and even number.
+\item The three standard axioms of Lean's logic:
+\begin{center}
+\lean{propext},\qquad \lean{Classical.choice},\qquad \lean{Quot.sound}.
+\end{center}
+The command \lean{\#print axioms} reports that the main theorems use these three and
+nothing else.
+\end{enumerate}
+The files contain no unproved step (no \lean{sorry} or \lean{admit}). They
+do not use \lean{native\_decide}, which would add trust in compiled code. The other
+definitions in the files (the lines, the incidence matrix, the three symmetries, the
+sectors) are used only inside the proof. A mistake in one of them could make the proof
+fail to check; it could not make a false statement pass.
+
+\subsection{How it was checked}
+The check is one command, run from the root of the accompanying repository:
+\begin{verbatim}
+bash scripts/lean_check.sh QueensSpectrum
+\end{verbatim}
+It builds the project with \lean{lake build}, scans the files for
+\lean{sorry} and \lean{admit}, and prints the axioms of each main theorem.
+It ends with a line beginning \lean{PASS lean\_check QueensSpectrum} only if the
+build has no error, the scan is empty and only the three standard axioms occur. On
+2026-11-27 it passed in two separate runs, and again in two separate runs after the file
+\nolinkurl{Eigenspace.lean} for Corollary~\ref{cor:eigenspace} was added. A further AI
+referee (Claude Opus) rebuilt the files of the Theorem from a fresh copy, again with a
+pass and identical axiom output.
+
+The same referee checked that the Lean statement matches the source conjecture. It also
+compared the Lean definition with an independently written queen-move rule. Lean's
+kernel confirmed that the two agree on all \(256\) pairs of squares for \(n=4\), and
+evaluation confirmed agreement for every \(n\le8\). The number of edges equals the
+source's formula \(n(n-1)(5n-1)/3\) for \(n\le8\). For \(n=4,5,6\) the Lean adjacency
+matrices agree entry by entry with matrices built by an independent script. In a second
+check, the same model confirmed, clause by clause, that the Lean statement of
+\lean{queens\_eigenspace} says what Corollary~\ref{cor:eigenspace} says. Its own exact
+rational computation for \(4\le n\le10\) found that the functions of the Lean statement
+span the kernel of \(\Adj-(n-4)I\), and that the eigenvectors printed by Cardoso, Costa
+and Duarte span the same space.
+
+\emph{Kernel replays.} A Lean build checks each proof with Lean's kernel, the small
+program that accepts or rejects proofs, while the file is compiled. A kernel replay checks
+the compiled proofs again afterwards, from the stored files. On 2026-11-27, Lean's own
+checker \lean{leanchecker}, shipped with Lean 4.37.0-rc1, replayed every declaration of
+all 12 files, and its separately built variant \lean{leanchecker-paranoid} did the same.
+With the option \lean{-{}-fresh}, both also re-added \nolinkurl{Main.lean} and everything
+it imports, Lean's core library and Mathlib included, to an empty environment. All these
+runs passed. Two kernels written independently of Lean's own, \lean{nanoda\_bin}
+(version 0.4.31) and \lean{lean4lean}, checked an export file of the nine main theorems
+and every declaration they depend on, made with the exporter \lean{lean4export}
+(version 3.1.0). Both passed, as did two further kernels shipped with the toolchain. A
+copy of the export file in which one proof was replaced by the proof of another theorem
+was rejected by all five checkers that read export files. One limit remains: the independent kernels
+check the exporter's rendering of the compiled files, not the compiled files themselves.
+Only Lean's own kernel replayed those directly. The records are in the folder
+\nolinkurl{lean/kernel-replays/} of the repository.
+
+The file \nolinkurl{REPRODUCE.md} gives versions, runtimes and the expected output.
+
+\subsection{How the Lean proof is organized}
+The Lean proof follows the written proof. The table lists where each step is
+formalized, by file and Lean name.
+\begin{center}
+\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.30\textwidth}%
+>{\raggedright\arraybackslash}p{0.62\textwidth}@{}}
+\toprule
+Written proof & Lean (file: names)\\
+\midrule
+Section~\ref{sec:notation}, \eqref{eq:Nv} & \nolinkurl{Defs}: \lean{Line}, \lean{N}, \lean{M}, \lean{N\_mulVec}\\
+Lemma~\ref{lem:clique} & \nolinkurl{Defs}: \lean{lemma1}\\
+Lemma~\ref{lem:gram} & \nolinkurl{Reduction}: \lean{lemma2}\\
+Lemma~\ref{lem:sym} & \nolinkurl{Symmetry}: \lean{lt\_lh}, \lean{lh\_lt\_lh}, \lean{M\_mulVec\_comp} and others\\
+Lemma~\ref{lem:sectors}(a)--(c) & \nolinkurl{Symmetry}, \nolinkurl{Kernel}: \lean{decomp}, \lean{W\_zero}, the projectors\\
+Lemma~\ref{lem:action}, Remark~\ref{rem:components} & \nolinkurl{Defs}: \lean{M\_mulVec\_row}, \lean{M\_mulVec\_diag}; \nolinkurl{Symmetry}: \lean{ker\_eqs}\\
+Lemma~\ref{lem:B1} & \nolinkurl{Kernel}: \lean{B1\_form}, \lean{vecB1\_mem}; \nolinkurl{Count}: \lean{finrank\_P0}\\
+Lemma~\ref{lem:E} & \nolinkurl{SectorE}: \lean{sectorE\_pure}; \nolinkurl{Kernel}: \lean{E\_zero}\\
+Lemmas~\ref{lem:window} and \ref{lem:A1} & \nolinkurl{SectorA1}: \lean{sectorA1\_pure}; \nolinkurl{Kernel}: \lean{A1\_zero}\\
+Lemma~\ref{lem:means} & \nolinkurl{SectorB2}: \lean{weighted\_means}\\
+Lemmas~\ref{lem:F} and \ref{lem:B2} & \nolinkurl{SectorB2}: \lean{sectorB2\_pure}; \nolinkurl{Kernel}: \lean{B2\_form}, \lean{vecB2\_mem}\\
+Proof of the Theorem & \nolinkurl{Kernel}: \lean{ker\_char}; \nolinkurl{Count}: \lean{finrank\_E}; \nolinkurl{Main}: \lean{queens\_mult}\\
+Algebraic multiplicity & \nolinkurl{AlgMult}: the two multiplicities agree for symmetric matrices\\
+Corollary~\ref{cor:eigenspace} & \nolinkurl{Eigenspace}: \lean{N\_vecB1}, \lean{N\_vecB2}, \lean{queens\_eigenspace}\\
+\bottomrule
+\end{tabular}
+\end{center}
+The comments in the Lean files letter the three parts of Lemma~\ref{lem:sectors}
+differently: their parts (a), (b), (c) are parts (b), (c), (a) of
+Lemma~\ref{lem:sectors} here.
+
+\subsection{Where the Lean proof differs from the written proof}
+The Lean proof reaches the same conclusions, sometimes by a different route. No
+statement is weakened. The differences are these.
+\begin{enumerate}
+\item \emph{The count.} Lemma~\ref{lem:sectors}(d) is not formalized as stated. Instead,
+Lean shows directly that \(\ker(M-nI)\) consists exactly of the vectors
+\((r,-r,0,0)+\gamma(0,0,\dc,-\dc)\) with \(r\) palindromic, \(\sum_ir_i=0\), and
+\(\gamma=0\) for even \(n\). Here \(\dc\) is the vector of Lemma~\ref{lem:B2}(b). Lean
+then computes the dimension through an injective linear parametrization. The number is
+the same as in Section~\ref{sec:main}.
+\item \emph{Lemma~\ref{lem:window}.} Lean uses a weaker consequence of the window
+identity, which suffices: the number \(U_k=T_{n-1-k}+T_{k-1}\) satisfies \(U_{k+2}=U_k\). This
+follows from \(T_{m+2}=T_m+2d_{m+2}\) and the symmetry \(d_{n-k}=d_k\). The small linear
+systems at the end of the proof of Lemma~\ref{lem:A1} are solved by explicit linear
+combinations, so their determinants are not computed as such.
+\item \emph{Lemma~\ref{lem:means}.} Lean assumes a rank function on the index set that
+strictly decreases along \(\alpha\) away from \(j_0\), instead of assuming that the chain
+\(j,\alpha(j),\alpha(\alpha(j)),\dots\) reaches \(j_0\). For the index maps used in
+Lemma~\ref{lem:B2} the two hypotheses are equivalent.
+\item \emph{Lemma~\ref{lem:E}.} The last step uses an algebraic identity instead of a
+positivity argument (the positive bracket in Step~3). The equations \((\mathrm{diag}_k)\) and Steps 1 and 2 of its proof give
+\(kd_k=\rho_k=\rho_{n-k}=(n-k)d_{n-k}=-(n-k)d_k\), hence \(nd_k=0\).
+\item \emph{Lemma~\ref{lem:F}.} Only the direction used in the proof is formalized:
+the equations \(\Eq\) imply the equations \(F\).
+\item \emph{Dimensions.} The dimensions of the sectors in
+Lemma~\ref{lem:sectors}(a), and the check after Lemma~\ref{lem:sectors}, are not
+formalized. The proof does not need them.
+\end{enumerate}
+
+\subsection{What is not formalized}
+\begin{itemize}
+\item The appendix (a second proof of Lemma~\ref{lem:B2}). The Theorem does not use it.
+\item Remark~\ref{rem:credit} and the other statements about the literature. They are
+about published papers, which Lean cannot check.
+\item The computer checks of Section~\ref{sec:computer}. For the Theorem they are
+superseded by the Lean proof. They remain independent checks of the definitions.
+\item Parts (a) and (c) of the conjecture. This paper does not address them.
+\end{itemize}
+
+% ==================================================================
+\appendix
+\section{A second proof of \texorpdfstring{Lemma~\ref{lem:B2}}{Lemma 12}}\label{app:alt}
+% ==================================================================
+
+This appendix is not used by the Theorem. It gives independent proofs of both parts of
+Lemma~\ref{lem:B2}. Notation is as in Section~\ref{sec:B2}.
+
+\subsection{Even \texorpdfstring{\(n\)}{n}: an explicit recurrence}
+Let \(n=2p\). Put \(E_j=T_{2j}\) for \(0\le j\le p-1\), and \(Q_j=T_{2(p-1-j)+1}\) for
+\(0\le j\le p-1\), with \(Q_p=0\). Since \(T_0=d_0\), \(T_1=2d_1\) and
+\(T_m-T_{m-2}=2d_m\) for \(2\le m\le n-1\), the numbers \(E_j\) and \(Q_j\) determine
+\(d\): \(d_0=E_0\), \(2d_{2i}=E_i-E_{i-1}\) for \(1\le i\le p-1\), and
+\(2d_{2i+1}=Q_{p-1-i}-Q_{p-i}\) for \(0\le i\le p-1\). The equations \eqref{eq:Eq}
+become:
+\begin{itemize}
+\item \(\Eq(0)\): \(T_{2p-1}=Q_0=0\);
+\item \(\Eq(2i)\), \(1\le i\le p-1\): \(i(E_i-E_{i-1})+Q_i=0\), that is,
+\(E_i=E_{i-1}-Q_i/i\);
+\item \(\Eq(2i+1)\), \(0\le i\le p-1\), written with \(j=p-1-i\):
+\(\frac{2p-1-2j}{2}(Q_j-Q_{j+1})+E_j=0\), that is,
+\(Q_{j+1}=Q_j+\frac{2E_j}{2p-1-2j}\).
+\end{itemize}
+By induction on \(j\), starting from \(Q_0=0\),
+\[
+E_j=E_0\,\frac{2p-1-2j}{2p-1}\quad(0\le j\le p-1),\qquad
+Q_j=E_0\,\frac{2j}{2p-1}\quad(0\le j\le p).
+\]
+Indeed, \(Q_{j+1}=E_0\bigl(\frac{2j}{2p-1}+\frac{2}{2p-1}\bigr)\) and
+\(E_{j+1}=E_0\bigl(\frac{2p-1-2j}{2p-1}-\frac{2}{2p-1}\bigr)\). The convention
+\(Q_p=0\) now reads \(E_0\frac{2p}{2p-1}=0\). So \(E_0=0\), all \(E_j\) and \(Q_j\)
+vanish, and \(d=0\). This proves Lemma~\ref{lem:B2}(a) again.
+
+\subsection{Odd \texorpdfstring{\(n\)}{n}: a block form}
+Let \(n=2p+1\) with \(p\ge2\). Put \(u_l=e_{2l}\) for \(0\le l\le p\) and
+\(w_l=e_{2l+1}\) for \(0\le l\le p-1\). For \(q\ge0\) let \(G_q\) be the symmetric matrix
+of size \(q+1\), with rows and columns indexed by \(0,\dots,q\), and entries
+\((G_q)_{ab}=a\iv{a=b}+\iv{a+b\le q}\). By \eqref{eq:Eqe}, for \(0\le i\le p\) and
+\(0\le i\le p-1\) respectively,
+\begin{align*}
+\Eq(2i)&=iu_i+\sum_{l=0}^{p-i}u_l=(G_pu)_i,\\
+\Eq(2i+1)&=\frac{2i+1}{2}w_i+\sum_{l=0}^{p-1-i}w_l
+=\tfrac12\bigl((I+2G_{p-1})w\bigr)_i.
+\end{align*}
+
+\begin{lemmaG}
+For \(q\ge1\), the matrix \(G_q\) is positive semidefinite of rank \(q\), and its kernel
+is spanned by \((q,-1,-1,\dots,-1)\).
+\end{lemmaG}
+
+\begin{proof}
+We eliminate the indices \(q,q-1,\dots,1\) one at a time and track the pivots. We use
+the following fact. Let \(X\) be a real symmetric matrix indexed by a finite set \(J\),
+let \(k\in J\) with \(X_{kk}\ne0\), and let \(X'\) be the matrix indexed by
+\(J\setminus\{k\}\) with \(X'_{ab}=X_{ab}-X_{ak}X_{kb}/X_{kk}\). Then \(X\) is congruent
+to the block-diagonal matrix with blocks \(X'\) and \((X_{kk})\). Hence
+\(\rank X=\rank X'+1\), and \(X\) is positive semidefinite if and only if \(X_{kk}>0\)
+and \(X'\) is positive semidefinite.
+
+Let \(m=\lfloor q/2\rfloor\). Write \(X^{(k)}\) for the matrix on \(\{0,\dots,k\}\)
+obtained after eliminating \(q,\dots,k+1\); so \(X^{(q)}=G_q\).
+
+\emph{Step 1: the indices \(q,\dots,m+1\).} We claim that for \(m\le k\le q\) and
+\(0\le a,b\le k\),
+\[
+X^{(k)}_{ab}=(G_q)_{ab}-\sum_{i=k+1}^{q}\frac{\iv{a\le q-i}\,\iv{b\le q-i}}{i}.
+\]
+This holds for \(k=q\). Suppose it holds for some \(k\ge m+1\). For every \(i\ge k+1\)
+we have \(k+i\ge2m+3>q\), so \(\iv{k\le q-i}=0\), and row \(k\) of \(X^{(k)}\) equals
+row \(k\) of \(G_q\). Thus \(X^{(k)}_{kk}=k+\iv{2k\le q}=k\), as \(2k\ge2m+2>q\), and
+\(X^{(k)}_{ak}=\iv{a\le q-k}\) for \(a<k\). So the pivot is \(k>0\), and eliminating
+\(k\) subtracts \(\iv{a\le q-k}\,\iv{b\le q-k}/k\). This gives the claim for \(k-1\). For
+\(k=m\) and \(0\le a,b\le m\) we have \(a+b\le2m\le q\), so
+\((G_q)_{ab}=a\iv{a=b}+1\), and the claim reads
+\[
+X^{(m)}_{ab}=a\iv{a=b}+c_{\max(a,b)},\qquad
+c_t=1-\sum_{i=m+1}^{q-t}\frac1i\quad(0\le t\le m),
+\]
+where the sum is empty when \(q-t<m+1\) (this happens only for \(q=2m\), \(t=m\)).
+
+\emph{Step 2: the indices \(m,\dots,1\).} Put \(\gamma_k=\frac{k}{q-k}\) for
+\(0\le k\le m\); note \(q-k\ge q-m\ge1\). We claim that for \(0\le k\le m\) and
+\(0\le a,b\le k\),
+\[
+X^{(k)}_{ab}=a\iv{a=b}+c_{\max(a,b)}-c_k+\gamma_k.
+\]
+For \(k=m\) this is Step~1, provided \(c_m=\gamma_m\). If \(q=2m\), then
+\(c_m=1=\frac{m}{q-m}\). If \(q=2m+1\), then \(c_m=1-\frac1{m+1}=\frac m{m+1}
+=\frac{m}{q-m}\). Suppose the claim holds for some \(k\) with \(1\le k\le m\). Then
+\(X^{(k)}_{kb}=\gamma_k\) for \(b<k\), and the pivot is
+\[
+\pi_k=X^{(k)}_{kk}=k+\gamma_k=\frac{k(q+1-k)}{q-k}>0.
+\]
+Eliminating \(k\) subtracts the constant \(\gamma_k^2/\pi_k\) from every entry. Now
+\(\gamma_k-\gamma_k^2/\pi_k=\gamma_k(\pi_k-\gamma_k)/\pi_k=k\gamma_k/\pi_k
+=\frac{k}{q+1-k}\). Also \(c_{k-1}-c_k=-\frac1{q+1-k}\): the sum defining \(c_{k-1}\)
+has one extra term, \(i=q+1-k\), which is at least \(m+1\) because \(k\le m\le q-m\).
+Hence
+\begin{align*}
+-c_k+\frac{k}{q+1-k}&=-c_{k-1}-\frac{1}{q+1-k}+\frac{k}{q+1-k}\\
+&=-c_{k-1}+\frac{k-1}{q-(k-1)}=-c_{k-1}+\gamma_{k-1},
+\end{align*}
+which is the claim for \(k-1\).
+
+\emph{Conclusion.} For \(k=0\) the claim gives the \(1\times1\) matrix
+\(X^{(0)}=(c_0-c_0+\gamma_0)=(0)\). By the fact, applied \(q\) times, \(G_q\) is
+congruent to the diagonal matrix with entries \(q,q-1,\dots,m+1,\pi_m,\dots,\pi_1,0\),
+of which the first \(q\) are positive. So \(G_q\) is positive semidefinite of rank
+\(q\). Finally \(\kappa=(q,-1,\dots,-1)\) lies in the kernel: \((G_q\kappa)_0=q-q=0\),
+and for \(1\le a\le q\), \((G_q\kappa)_a=-a+\bigl(q-(q-a)\bigr)=0\), because row \(a\)
+of the matrix \(\bigl(\iv{a+b\le q}\bigr)_{a,b}\) has ones exactly in the columns
+\(0,\dots,q-a\).
+\end{proof}
+
+\begin{proof}[Second proof of Lemma~\ref{lem:B2}(b)]
+The system \eqref{eq:Eq} is \(G_pu=0\) together with \((I+2G_{p-1})w=0\). By Lemma~G
+with \(q=p\ge2\), \(\ker G_p\) is spanned by \(u=(p,-1,\dots,-1)\); that is,
+\(d_0=p\) and \(d_{2l}=-\frac12\) for \(1\le l\le p\), which is \(\frac12\dc\) on the
+even indices. By Lemma~G with \(q=p-1\ge1\), \(G_{p-1}\) is positive semidefinite, so
+\(I+2G_{p-1}\) is positive definite and \(w=0\). Hence the solutions of \eqref{eq:Eq}
+form a space of dimension exactly \(1\).
+\end{proof}
+
+% ==================================================================
+\section*{Acknowledgements}
+% ==================================================================
+
+We thank Domingos M.~Cardoso, In\^es Ser\^odio Costa and Rui Duarte for the conjecture,
+the lower bounds and the eigenvectors on which this paper builds.
+
+The three Claude referees named in the abstract reviewed an earlier text of the same
+proof. The present text is a re-presentation of that refereed text, with no mathematical
+change. ChatGPT and Gemini read the first version of the present text. The second version
+added the Lean formalization of the Theorem. This third version adds the Lean
+formalization of Corollary~\ref{cor:eigenspace} and the kernel replays
+(Section~\ref{sec:formal}), and corrects several citations and bibliographic details. The
+mathematical argument is unchanged.
+
+% ==================================================================
+\begin{thebibliography}{BCHV16}
+% ==================================================================
+
+\bibitem[BCHV16]{BCHV16}
+A.~E. Brouwer, S.~M. Cioab\u{a}, W.~H. Haemers and J.~R. Vermette,
+\emph{Notes on simplicial rook graphs},
+J. Algebraic Combin. \textbf{43} (2016), no.~4, 783--799,
+\href{https://doi.org/10.1007/s10801-015-0633-y}{doi:10.1007/s10801-015-0633-y};
+\href{https://arxiv.org/abs/1408.5615}{arXiv:1408.5615}.
+
+\bibitem[CCD20]{CCD20}
+D.~M. Cardoso, I.~S. Costa and R.~Duarte,
+\emph{Spectral properties of the \(n\)-Queens' graphs}, preprint, 2020;
+\href{https://arxiv.org/abs/2012.01992}{arXiv:2012.01992}.
+
+\bibitem[CCD22]{CCD22}
+D.~M. Cardoso, I.~S. Costa and R.~Duarte,
+\emph{Sharp bounds on the least eigenvalue of a graph determined from edge clique
+partitions}, J. Algebraic Combin. \textbf{58} (2023), no.~1, 263--277,
+\href{https://doi.org/10.1007/s10801-023-01247-1}{doi:10.1007/s10801-023-01247-1};
+\href{https://arxiv.org/abs/2201.01224}{arXiv:2201.01224}.
+
+\bibitem[CCD23]{CCD23}
+D.~M. Cardoso, I.~S. Costa and R.~Duarte,
+\emph{Integer eigenvalues of the \(n\)-Queens graph},
+Discrete Math. \textbf{347} (2024), no.~9, Paper No.~114065,
+\href{https://doi.org/10.1016/j.disc.2024.114065}{doi:10.1016/j.disc.2024.114065};
+\href{https://arxiv.org/abs/2301.08106}{arXiv:2301.08106}.
+
+\bibitem[CCD25]{CCD25}
+D.~M. Cardoso, I.~S. Costa and R.~Duarte,
+\emph{A family of regular integral graphs and its application to the \(n\)-Queens'
+graph}, preprint, 2025;
+\href{https://arxiv.org/abs/2508.01088}{arXiv:2508.01088}.
+
+\bibitem[Cos24]{Cos24}
+I.~F.~S. Costa, \emph{The \(n\)-Queens graph and its generalizations}, PhD thesis,
+Universidade de Aveiro, 2024;
+\href{http://hdl.handle.net/10773/41899}{hdl:10773/41899}.
+
+\bibitem[MW15]{MW15}
+J.~L. Martin and J.~D. Wagner,
+\emph{On the spectra of simplicial rook graphs}, Graphs Combin. \textbf{31} (2015),
+no.~5, 1589--1611,
+\href{https://doi.org/10.1007/s00373-014-1452-y}{doi:10.1007/s00373-014-1452-y};
+\href{https://arxiv.org/abs/1209.3493}{arXiv:1209.3493}.
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,28 @@
+n=4 Y: eigenvectors=True in_Cor13_span=True rank=1
+n=4 F: eigenvectors=True in_Cor13_span=True rank=1
+n=4 rank(Y+Z)=1 rank(F+E)=1 rank(Cor13 family)=1 OK
+n=5 Y: eigenvectors=True in_Cor13_span=True rank=2
+n=5 F: eigenvectors=True in_Cor13_span=True rank=2
+n=5 Z: eigenvectors=True in_Cor13_span=True rank=1
+n=5 E: eigenvectors=True in_Cor13_span=True rank=1
+n=5 rank(Y+Z)=3 rank(F+E)=3 rank(Cor13 family)=3 OK
+n=6 Y: eigenvectors=True in_Cor13_span=True rank=2
+n=6 F: eigenvectors=True in_Cor13_span=True rank=2
+n=6 rank(Y+Z)=2 rank(F+E)=2 rank(Cor13 family)=2 OK
+n=7 Y: eigenvectors=True in_Cor13_span=True rank=3
+n=7 F: eigenvectors=True in_Cor13_span=True rank=3
+n=7 Z: eigenvectors=True in_Cor13_span=True rank=1
+n=7 E: eigenvectors=True in_Cor13_span=True rank=1
+n=7 rank(Y+Z)=4 rank(F+E)=4 rank(Cor13 family)=4 OK
+n=8 Y: eigenvectors=True in_Cor13_span=True rank=3
+n=8 F: eigenvectors=True in_Cor13_span=True rank=3
+n=8 rank(Y+Z)=3 rank(F+E)=3 rank(Cor13 family)=3 OK
+n=9 Y: eigenvectors=True in_Cor13_span=True rank=4
+n=9 F: eigenvectors=True in_Cor13_span=True rank=4
+n=9 Z: eigenvectors=True in_Cor13_span=True rank=1
+n=9 E: eigenvectors=True in_Cor13_span=True rank=1
+n=9 rank(Y+Z)=5 rank(F+E)=5 rank(Cor13 family)=5 OK
+n=10 Y: eigenvectors=True in_Cor13_span=True rank=4
+n=10 F: eigenvectors=True in_Cor13_span=True rank=4
+n=10 rank(Y+Z)=4 rank(F+E)=4 rank(Cor13 family)=4 OK
+SOURCE VECTORS CHECK: ALL PASS

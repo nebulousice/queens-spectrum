@@ -1,0 +1,16 @@
+queens-spectrum, stage 4 (Prover) replay runs, 2026-11-27
+
+Machine: Windows 11 Home 10.0.26200
+Python: 3.12.10 (pure Python: int, fractions.Fraction; no third-party library is imported by prover_check.py)
+
+Commands (run from targets/queens-spectrum/prover/):
+  python prover_check.py small   > logs/small_4_5.log
+  python prover_check.py 4 40    > logs/replay_4_40.log     (381 s in total; last line: PROVER REPLAY: ALL PASS)
+
+Rank logic used by prover_check.py: rank over Q >= rank modulo the prime 2^31 - 1.
+  "kernel = 0" is shown by full rank modulo the prime;
+  "kernel has dimension k" is shown by rank modulo the prime = size - k together with k explicit kernel
+  vectors that are verified exactly and are linearly independent.
+Small exact null spaces (the subsystems of Lemma 12) are computed with fractions.Fraction.
+
+These runs are corroboration only. The proof in ../PROOF.md does not depend on them.
